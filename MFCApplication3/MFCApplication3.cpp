@@ -192,7 +192,7 @@ BOOL CMFCApplication3App::ShowMenu()
 	// 데이터베이스와의 연결 여부 반환
 	TRY
 	{
-		db_menu.OpenEx(_T("DSN=UOS25;UID=UOS25;PWD=l27094824"));
+		db_menu.OpenEx(_T("DSN=UOS25;UID=UOS25;PWD=0000"));
 	}
 		CATCH(CException, e)
 	{

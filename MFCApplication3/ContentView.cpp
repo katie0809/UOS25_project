@@ -44,7 +44,6 @@ void CContentView::Dump(CDumpContext& dc) const
 
 // CContentView 메시지 처리기입니다.
 
-
 BOOL CContentView::PreCreateWindow(CREATESTRUCT& cs)
 {
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
@@ -95,7 +94,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 
 	TRY
 	{
-		db_content.OpenEx(_T("DSN=UOS25;UID=UOS25;PWD=l27094824"));
+		db_content.OpenEx(_T("DSN=UOS25;UID=UOS25;PWD=0000"));
 	}
 		CATCH(CException, e)
 	{
@@ -177,7 +176,8 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		}
 
 		recSet.Close();
-		m_list->InsertColumn(idx, L"+ 새 주문 하기", LVCFMT_LEFT, 400);
+		m_list->InsertItem(idx, L"+ 새 주문 하기", 30);
+		m_list->SetItemText(idx, 0, L"+ 새 주문 하기");
 		break;
 	}
 	case 2:
@@ -275,7 +275,6 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 	{
 	case 1:
 	{
-		if(pNMItemActivate->iItem)
 		if (pNMItemActivate->iItem != -1)
 		{
 			// 클릭된 행 넘버값을 받아온다
@@ -283,8 +282,16 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 			int cur_idx = pNMListView->iItem;
 
 			
-			// idx번째 행의 맨 앞 값을 받아와 현재 날짜 객체로 저장
+			// idx번째 행의 맨 앞 값을 받아와 임시 스트링으로 저장
 			// 선택된 항목의 CString값을 받아오는 코드입니다
+			CString tmp_str;
+			tmp_str = m_list->GetItemText(cur_idx, 0);
+			if (tmp_str == '+')
+			{
+				dlg_new_order = new NewOrder();
+				dlg_new_order->Create(NewOrder::IDD);
+				dlg_new_order->ShowWindow(SW_SHOW);
+			}
 
 			// current_date = m_list->GetItemText(cur_idx, 0);
 			

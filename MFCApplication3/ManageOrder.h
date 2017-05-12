@@ -39,4 +39,5 @@ public:
 	virtual BOOL OnInitDialog();
 	CCheckListBox m_orderList;
 	afx_msg void OnBnClickedReturn();
+	afx_msg void OnBnClickedConfirm();
 };

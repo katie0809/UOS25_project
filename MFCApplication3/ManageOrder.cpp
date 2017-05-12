@@ -56,6 +56,7 @@ void CManageOrder::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CManageOrder, CDialogEx)
 	ON_BN_CLICKED(IDC_RETURN, &CManageOrder::OnBnClickedReturn)
+	ON_BN_CLICKED(IDC_CONFIRM, &CManageOrder::OnBnClickedConfirm)
 END_MESSAGE_MAP()
 
 
@@ -72,7 +73,7 @@ BOOL CManageOrder::OnInitDialog()
 
 	TRY
 	{
-		db_order.OpenEx(_T("DSN=UOS25;UID=UOS25;PWD=l27094824"));
+		db_order.OpenEx(_T("DSN=UOS25;UID=UOS25;PWD=0000"));
 	}
 		CATCH(CException, e)
 	{
@@ -132,16 +133,16 @@ void CManageOrder::ShowData(CDatabase & db_order)
 void CManageOrder::OnBnClickedReturn()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	// checkbox로 선택된 아이템을 반품한다.
+	// checkbox로 선택된 아이템을 재주문한다.
 
 	int itemNum = m_orderList.GetCount(); //리스트에 있는 아이템 개수를 얻어온다
-	int *returnItm, returnItmCnt = 0; //반품 항목의 인덱스를 저장할 배열과 반품 항목의 개수
+	int *returnItm, returnItmCnt = 0; //반품 항목의 인덱스를 저장할 배열과 재주문 항목의 개수
 	returnItm = new int[itemNum]; 
 	CDatabase db_order;
 
 	TRY
 	{
-		db_order.OpenEx(_T("DSN=UOS25;UID=UOS25;PWD=l27094824"));
+		db_order.OpenEx(_T("DSN=UOS25;UID=UOS25;PWD=0000"));
 	}
 		CATCH(CException, e)
 	{
@@ -184,5 +185,11 @@ void CManageOrder::OnBnClickedReturn()
 	for (int i = 0; i <= returnItmCnt; i++)
 		m_orderList.DeleteString(i);
 
-	MessageBox(L"반품 완료");
+	MessageBox(L"재주문 완료");
+}
+
+
+void CManageOrder::OnBnClickedConfirm()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }

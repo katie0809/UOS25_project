@@ -158,7 +158,7 @@ void CMenuView::OnInitialUpdate()
 	{
 		TRY
 		{
-			db_menu.OpenEx(_T("DSN=UOS25;UID=UOS25;PWD=l27094824"));
+			db_menu.OpenEx(_T("DSN=UOS25;UID=UOS25;PWD=0000"));
 		}
 			CATCH(CException, e)
 		{
