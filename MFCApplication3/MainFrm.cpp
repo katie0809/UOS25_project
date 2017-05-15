@@ -107,25 +107,5 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 	m_wndSplitter.CreateView(0, 0, RUNTIME_CLASS(CMenuView), CSize(200, 0), pContext);
 	m_wndSplitter.CreateView(0, 1, RUNTIME_CLASS(CContentView), CSize(0, 0), pContext);
 	return TRUE;
-	/*
-	if (!m_wndSplitter.CreateStatic(this, 1, 2));
-	{
-		TRACE0("Failed to create splitter window\n");
-		return FALSE;
-	}
 
-	// 테이블 정보 관련 :: CLeftContainerView includes CDataManager and CFieldInfoView
-	if (!m_wndSplitter.CreateView(0, 0, RUNTIME_CLASS(CLeftContainerView), CSize(200, 0), pContext))
-	{
-		m_wndSplitter.DestroyWindow();
-		return FALSE;
-	}
-
-	//쿼리 관련 :: CRightContainerView includes CQueryView and CResultView
-	if (!m_wndSplitter.CreateView(0, 1, RUNTIME_CLASS(CRightContainerView), CSize(0, 0), pContext))
-	{
-		m_wndSplitter.DestroyWindow();
-	}
-*/
-//	return CFrameWnd::OnCreateClient(lpcs, pContext);
 }

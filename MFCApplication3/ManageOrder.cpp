@@ -57,6 +57,7 @@ void CManageOrder::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CManageOrder, CDialogEx)
 	ON_BN_CLICKED(IDC_RETURN, &CManageOrder::OnBnClickedReturn)
 	ON_BN_CLICKED(IDC_CONFIRM, &CManageOrder::OnBnClickedConfirm)
+	ON_BN_CLICKED(IDOK, &CManageOrder::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
@@ -69,7 +70,7 @@ BOOL CManageOrder::OnInitDialog()
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 	// 데이터베이스와의 연결
-	CDatabase db_order;
+	// CDatabase db_order;
 
 	TRY
 	{
@@ -90,7 +91,7 @@ BOOL CManageOrder::OnInitDialog()
 	END_CATCH
 	
 	ShowData(db_order);
-	db_order.Close();
+	//db_order.Close();
 	
 	return TRUE;  
 	// return TRUE unless you set the focus to a control
@@ -138,25 +139,6 @@ void CManageOrder::OnBnClickedReturn()
 	int itemNum = m_orderList.GetCount(); //리스트에 있는 아이템 개수를 얻어온다
 	int *returnItm, returnItmCnt = 0; //반품 항목의 인덱스를 저장할 배열과 재주문 항목의 개수
 	returnItm = new int[itemNum]; 
-	CDatabase db_order;
-
-	TRY
-	{
-		db_order.OpenEx(_T("DSN=UOS25;UID=UOS25;PWD=0000"));
-	}
-		CATCH(CException, e)
-	{
-		TCHAR errMSG[255];
-
-		e->GetErrorMessage(errMSG, 255);
-		AfxMessageBox(errMSG, MB_ICONERROR);
-
-
-		if (db_order.IsOpen())
-			db_order.Close();
-
-	}
-	END_CATCH
 
 	for (int i = 0; i < itemNum; i++)
 	{
@@ -192,4 +174,12 @@ void CManageOrder::OnBnClickedReturn()
 void CManageOrder::OnBnClickedConfirm()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CManageOrder::OnBnClickedOk()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	CDialogEx::OnOK();
+	db_order.Close();
 }

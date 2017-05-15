@@ -15,6 +15,7 @@ class CManageOrder : public CDialogEx
 public:
 	class CContentView * p_contentView;
 	CString current_date; // 어떤 날짜의 주문목록을 불러와야 하는지~
+	CDatabase db_order;
 	int order_id;
 /*
 	Operations
@@ -40,4 +41,5 @@ public:
 	CCheckListBox m_orderList;
 	afx_msg void OnBnClickedReturn();
 	afx_msg void OnBnClickedConfirm();
+	afx_msg void OnBnClickedOk();
 };

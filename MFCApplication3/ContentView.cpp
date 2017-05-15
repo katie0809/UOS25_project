@@ -150,17 +150,20 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	{
 		// 주문 관리
 		// m_list = &GetListCtrl();
+
 		m_list->ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
 		m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
+		if (m_list->GetItemCount() > 0)
+			DeleteContent(m_list);
 
 		int idx = 1;
 		recSet.Open(CRecordset::dynaset, L"select distinct order_date, order_id from order_list order by order_id");
+		// recSet.Open(CRecordset::dynaset, L"select distinct ORDER_CODE from _ORDER order by ORDER_CODE");
 
-		if(m_list->GetItemCount() > 0)
-			DeleteContent(m_list);
-
-		m_list->InsertColumn(idx, L"주문 날짜", LVCFMT_CENTER, 400);
+		// m_list->InsertColumn(idx, L"주문 날짜", LVCFMT_CENTER, 400);
+		m_list->InsertColumn(idx, L"주문 목록", LVCFMT_CENTER, 400);
+		// m_list->InsertColumn(idx, L"주문 수량", LVCFMT_CENTER, 400);
 
 		while (!recSet.IsEOF())
 		{
@@ -173,6 +176,18 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			m_list->SetItemText(idx, 0, order_list);
 			idx++;
 			recSet.MoveNext();
+			
+			/*
+			CString order_code = L" ", order_date;
+			recSet.GetFieldValue(_T("ORDER_CODE"), order_code);;
+			order_date = order_code.Left(8); //주문 코드에서 주문날짜 추출
+			list_itm.Format(L"주문날짜 %s | %s", order_date, order_code);
+
+			m_list->InsertItem(idx, list_itm, 30);
+			m_list->SetItemText(idx, 0, list_itm);
+			idx++;
+			recSet.MoveNext();
+			*/
 		}
 
 		recSet.Close();
@@ -183,21 +198,51 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	case 2:
 	{
 		// 반품 관리
+		
+		// 화면 스타일 지정
+		m_list->ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
+		m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+
+		// 화면 클리어
 		if (m_list->GetItemCount() > 0)
 			DeleteContent(m_list);
 
-		m_list->ModifyStyle(LVS_TYPEMASK, 0);
-		
-		// Create Button
-		//CButton * btn1;
-		//btn1->Create(L"My Button", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, CRect(300, 300, 300, 300), pSender, 103);
-		//btn1->ShowWindow(SW_SHOW);
+		int idx = 1;
+		recSet.Open(CRecordset::dynaset, L"select distinct order_date, order_id from order_list order by order_id");
+		// recSet.Open(CRecordset::dynaset, L"select distinct RETURN_CODE, RETURN_AMOUNT from RETURN order by RETURN_CODE");
+
+
+		m_list->InsertColumn(idx, L"반품 목록", LVCFMT_CENTER, 400);
+
+		while (!recSet.IsEOF())
+		{
+			CString order_date = L" ", order_list;
+			recSet.GetFieldValue(_T("ORDER_DATE"), order_date);
+			AfxExtractSubString(order_date, order_date, 0, ' ');
+			order_list.Format(L"주문번호 %d | %s", idx + 1000, order_date);
+
+			m_list->InsertItem(idx, order_list, 30);
+			m_list->SetItemText(idx, 0, order_list);
+			idx++;
+			recSet.MoveNext();
+		}
+
+		recSet.Close();
+		m_list->InsertItem(idx, L"+ 새 반품 하기", 30);
+		m_list->SetItemText(idx, 0, L"+ 새 반품 하기");
+		break;
 		
 		break;
 	}
 	case 3:
 	{
 		// 판매 관리
+
+		// m_list->ModifyStyle(LVS_TYPEMASK, 0);
+
+		if (m_list->GetItemCount() > 0)
+			DeleteContent(m_list);
+
 		//sales_view = new CSalesView();
 		//sales_view->Create(NULL, NULL, WS_CHILD, CRect(0,0,0,0), pSender, 200, this);
 		break;
@@ -205,44 +250,113 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	case 4:
 	{
 		// 입고 관리
+
+		// m_list->ModifyStyle(LVS_TYPEMASK, 0);
+
+
+		if (m_list->GetItemCount() > 0)
+			DeleteContent(m_list);
+
 		break;
 	}
 	case 5:
 	{
 		// 출고 관리
+		if (m_list->GetItemCount() > 0)
+			DeleteContent(m_list);
+
 		break;
 	}
 	case 6:
 	{
 		// 물품 등록
+		if (m_list->GetItemCount() > 0)
+			DeleteContent(m_list);
+
+		// m_list->ModifyStyle(LVS_TYPEMASK, 0);
+
 		break;
 	}
 	case 7:
 	{
 		// 물품 삭제
+		if (m_list->GetItemCount() > 0)
+			DeleteContent(m_list);
+
+		// m_list->ModifyStyle(LVS_TYPEMASK, 0);
+
 		break;
 	}
 	case 8:
 	{
 		// 수입 관리
+		if (m_list->GetItemCount() > 0)
+			DeleteContent(m_list);
+
+		// m_list->ModifyStyle(LVS_TYPEMASK, 0);
+
 		break;
 	}
 	case 9:
 	{
 		// 지출 관리
+		if (m_list->GetItemCount() > 0)
+			DeleteContent(m_list);
+
+		// m_list->ModifyStyle(LVS_TYPEMASK, 0);
+
 		break;
 	}
 	case 10:
 	{
 		// 직원 고용
+		if (m_list->GetItemCount() > 0)
+			DeleteContent(m_list);
+
+		// m_list->ModifyStyle(LVS_TYPEMASK, 0);
+
 		break;
 	}
 	case 11:
 	{
 		// 직원 해고
+		if (m_list->GetItemCount() > 0)
+			DeleteContent(m_list);
+
+		// m_list->ModifyStyle(LVS_TYPEMASK, 0);
+
 		break;
 	}
 	default:
+
+		// UOS25 로고화면
+
+		CClientDC pDC(this);//현재 다이얼로그의 타이틀바를 제외한 영역을 얻는다.
+		CDC memDC;
+		CPen pen;
+		CBrush brush;
+		pen.CreatePen(PS_SOLID, 1, RGB(255, 255, 255));
+		brush.CreateSolidBrush(RGB(255, 255, 255));
+
+		CPen *p = pDC.SelectObject(&pen);
+		CBrush *b = pDC.SelectObject(&brush);
+
+		pDC.Rectangle(0, 0, 1500, 800);
+		pDC.SelectObject(p);
+		pDC.SelectObject(b);
+
+		memDC.CreateCompatibleDC(&pDC);//CDC와 CClinetDC를 연결해주는 구문
+
+		CBitmap m_bitMain;
+		m_bitMain.LoadBitmapW(IDB_LOGO);
+		CBitmap *oldbm = memDC.SelectObject(&m_bitMain);
+		//	pDC.StretchBlt(17, 23, 300, 300, &memDC, 0, 0, 350, 350, SRCCOPY);
+		pDC.BitBlt(150, 100, 888, 396, &memDC, 0, 0, SRCCOPY);
+		//bitblt함수를 사용하여 실제 bmp그림파일을 화면에 출력한다.
+		//좌표 10,10위치에 300*300의 크기로 그림을 그린다.
+		//원본그림의 왼쪽 위 포인트를 0,0으로 설정한다.
+		//bmp파일을 사용하므로 모든 출력은 픽셀을 기준으로 한다.
+
 		break;
 	}
 
@@ -286,11 +400,14 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 			// 선택된 항목의 CString값을 받아오는 코드입니다
 			CString tmp_str;
 			tmp_str = m_list->GetItemText(cur_idx, 0);
-			if (tmp_str == '+')
+
+			if (tmp_str == "+ 새 주문 하기")
 			{
+				//새 주문하기 항목 선택 시
 				dlg_new_order = new NewOrder();
 				dlg_new_order->Create(NewOrder::IDD);
 				dlg_new_order->ShowWindow(SW_SHOW);
+				break;
 			}
 
 			// current_date = m_list->GetItemText(cur_idx, 0);
@@ -303,9 +420,7 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 		}
 		else
 		{
-			dlg_new_order = new NewOrder();
-			dlg_new_order->Create(NewOrder::IDD);
-			dlg_new_order->ShowWindow(SW_SHOW);
+
 		}
 		break;
 	}
