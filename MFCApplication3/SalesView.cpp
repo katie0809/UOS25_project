@@ -29,6 +29,7 @@ void CSalesView::OnDraw(CDC* pDC)
 {
 	CDocument* pDoc = GetDocument();
 	// TODO: 여기에 그리기 코드를 추가합니다.
+
 }
 
 

@@ -100,6 +100,7 @@ BOOL CManageOrder::OnInitDialog()
 
 void CManageOrder::ShowData(CDatabase & db_order)
 {
+
 	CRecordset recSet(&db_order);
 	CString strSQL, strNAME, strPRICE, strREMAIN, strISRETURN;
 

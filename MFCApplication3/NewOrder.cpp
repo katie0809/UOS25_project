@@ -31,6 +31,7 @@ void NewOrder::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(NewOrder, CDialogEx)
 	ON_BN_CLICKED(IDC_ORDER, &NewOrder::OnBnClickedOrder)
+	ON_BN_CLICKED(IDOK, &NewOrder::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
@@ -109,4 +110,11 @@ void NewOrder::ShowData(CDatabase & db_neworder)
 void NewOrder::OnBnClickedOrder()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void NewOrder::OnBnClickedOk()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	CDialogEx::OnOK();
 }

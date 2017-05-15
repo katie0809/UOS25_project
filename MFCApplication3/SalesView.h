@@ -22,6 +22,7 @@ public:
 
 protected:
 	DECLARE_MESSAGE_MAP()
+
 };
 
 

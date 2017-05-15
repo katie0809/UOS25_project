@@ -253,7 +253,6 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 
 		// m_list->ModifyStyle(LVS_TYPEMASK, 0);
 
-
 		if (m_list->GetItemCount() > 0)
 			DeleteContent(m_list);
 

@@ -24,4 +24,6 @@ public:
 	virtual BOOL OnInitDialog();
 	void ShowData(CDatabase & db_neworder);
 	CCheckListBox m_neworderList;
+	afx_msg void OnBnClickedOrder();
+	afx_msg void OnBnClickedOk();
 };
