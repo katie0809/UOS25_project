@@ -51,9 +51,6 @@
     <ClInclude Include="NewOrder.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SalesView.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFCApplication3.cpp">
@@ -81,9 +78,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="NewOrder.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SalesView.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

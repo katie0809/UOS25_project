@@ -51,6 +51,7 @@ void CManageOrder::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST1, m_orderList);
+	DDX_Control(pDX, IDC_LIST2, m_orderlist);
 }
 
 

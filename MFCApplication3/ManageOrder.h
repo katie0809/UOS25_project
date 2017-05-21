@@ -1,6 +1,7 @@
 
 #pragma once
 #include "afxwin.h"
+#include "afxcmn.h"
 
 
 // CManageOrder 대화 상자입니다.
@@ -42,4 +43,5 @@ public:
 	afx_msg void OnBnClickedReturn();
 	afx_msg void OnBnClickedConfirm();
 	afx_msg void OnBnClickedOk();
+	CListCtrl m_orderlist;
 };

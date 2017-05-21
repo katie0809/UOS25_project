@@ -25,6 +25,7 @@ void NewOrder::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_NEW_ORDER, m_neworderList);
+	DDX_Control(pDX, IDC_LIST1, m_newOrder);
 }
 
 

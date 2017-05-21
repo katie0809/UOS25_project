@@ -6,8 +6,8 @@
 #include "ContentView.h"
 #include "ManageOrder.h"
 #include "NewOrder.h"
-#include "SalesView.h"
 // CContentView
+
 
 IMPLEMENT_DYNCREATE(CContentView, CListView)
 

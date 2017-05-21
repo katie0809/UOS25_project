@@ -66,6 +66,7 @@ void CMenuView::SaveMenuState(CDatabase & db_menu)
 void CMenuView::SetMenu(CDatabase & db_menu)
 {
 
+
 	//트리를 만든다
 	CRecordset recSet(&db_menu);
 	HTREEITEM  htItem[MENU_ITEM_COUNT];

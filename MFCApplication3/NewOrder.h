@@ -1,5 +1,6 @@
 #pragma once
 #include "afxwin.h"
+#include "afxcmn.h"
 
 
 // NewOrder 대화 상자입니다.
@@ -26,4 +27,5 @@ public:
 	CCheckListBox m_neworderList;
 	afx_msg void OnBnClickedOrder();
 	afx_msg void OnBnClickedOk();
+	CListCtrl m_newOrder;
 };
