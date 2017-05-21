@@ -1,4 +1,4 @@
-// ContentView.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+// ContentView.cpp : êµ¬í˜„ íŒŒì¼ìž…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -6,7 +6,6 @@
 #include "ContentView.h"
 #include "ManageOrder.h"
 #include "NewOrder.h"
-#include "SalesView.h"
 // CContentView
 
 IMPLEMENT_DYNCREATE(CContentView, CListView)
@@ -25,7 +24,7 @@ BEGIN_MESSAGE_MAP(CContentView, CListView)
 END_MESSAGE_MAP()
 
 
-// CContentView Áø´ÜÀÔ´Ï´Ù.
+// CContentView ì§„ë‹¨ìž…ë‹ˆë‹¤.
 
 #ifdef _DEBUG
 void CContentView::AssertValid() const
@@ -42,15 +41,15 @@ void CContentView::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CContentView ¸Þ½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CContentView ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ìž…ë‹ˆë‹¤.
 
 BOOL CContentView::PreCreateWindow(CREATESTRUCT& cs)
 {
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ëž˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 
 	/*
-	main contents°¡ Ç¥½ÃµÇ´Â CRightContainerView´Â
-	±âº»ÀûÀ¸·Î listviewÀÇ ÇüÅÂ¸¦ ¶è´Ù
+	main contentsê°€ í‘œì‹œë˜ëŠ” CRightContainerViewëŠ”
+	ê¸°ë³¸ì ìœ¼ë¡œ listviewì˜ í˜•íƒœë¥¼ ëˆë‹¤
 	*/
 	//cs.style |= LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL;
 
@@ -61,10 +60,10 @@ BOOL CContentView::PreCreateWindow(CREATESTRUCT& cs)
 void CContentView::DeleteContent(CListCtrl * m_list)
 {
 	/*
-		ÄÁÅÙÃ÷ È­¸éÀ» ÀüºÎ Áö¿î´Ù
+		ì»¨í…ì¸  í™”ë©´ì„ ì „ë¶€ ì§€ìš´ë‹¤
 	*/
 
-	// ¸®½ºÆ® Ç×¸ñÀ» Áö¿î´Ù
+	// ë¦¬ìŠ¤íŠ¸ í•­ëª©ì„ ì§€ìš´ë‹¤
 
 	CHeaderCtrl *p_headerCtrl;
 
@@ -83,12 +82,12 @@ void CContentView::DeleteContent(CListCtrl * m_list)
 
 void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 {
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ëž˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 
 	CUR_CONTENT = lHint;
 	m_list = &GetListCtrl();
 
-	// µ¥ÀÌÅÍº£ÀÌ½º¿¡ ¿¬°á
+	// ë°ì´í„°ë² ì´ìŠ¤ì— ì—°ê²°
 	CDatabase db_content;
 	CRecordset recSet(&db_content);
 
@@ -116,7 +115,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	{
 		case 1:	
 		{
-			// ÁÖ¹® °ü¸®
+			// ì£¼ë¬¸ ê´€ë¦¬
 			// m_list = &GetListCtrl();
 
 			m_list->ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
@@ -129,16 +128,16 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			recSet.Open(CRecordset::dynaset, L"select distinct order_date, order_id from order_list order by order_id");
 			// recSet.Open(CRecordset::dynaset, L"select distinct ORDER_CODE from _ORDER order by ORDER_CODE");
 
-			// m_list->InsertColumn(idx, L"ÁÖ¹® ³¯Â¥", LVCFMT_CENTER, 400);
-			m_list->InsertColumn(idx, L"ÁÖ¹® ¸ñ·Ï", LVCFMT_CENTER, 400);
-			// m_list->InsertColumn(idx, L"ÁÖ¹® ¼ö·®", LVCFMT_CENTER, 400);
+			// m_list->InsertColumn(idx, L"ì£¼ë¬¸ ë‚ ì§œ", LVCFMT_CENTER, 400);
+			m_list->InsertColumn(idx, L"ì£¼ë¬¸ ëª©ë¡", LVCFMT_CENTER, 400);
+			// m_list->InsertColumn(idx, L"ì£¼ë¬¸ ìˆ˜ëŸ‰", LVCFMT_CENTER, 400);
 
 			while (!recSet.IsEOF())
 			{
 				CString order_date = L" ", order_list;
 				recSet.GetFieldValue(_T("ORDER_DATE"), order_date);
 				AfxExtractSubString(order_date, order_date, 0, ' ');
-				order_list.Format(L"ÁÖ¹®¹øÈ£ %d | %s", idx+1000, order_date);
+				order_list.Format(L"ì£¼ë¬¸ë²ˆí˜¸ %d | %s", idx+1000, order_date);
 
 				m_list->InsertItem(idx, order_list, 30);
 				m_list->SetItemText(idx, 0, order_list);
@@ -148,8 +147,8 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				/*
 				CString order_code = L" ", order_date;
 				recSet.GetFieldValue(_T("ORDER_CODE"), order_code);;
-				order_date = order_code.Left(8); //ÁÖ¹® ÄÚµå¿¡¼­ ÁÖ¹®³¯Â¥ ÃßÃâ
-				list_itm.Format(L"ÁÖ¹®³¯Â¥ %s | %s", order_date, order_code);
+				order_date = order_code.Left(8); //ì£¼ë¬¸ ì½”ë“œì—ì„œ ì£¼ë¬¸ë‚ ì§œ ì¶”ì¶œ
+				list_itm.Format(L"ì£¼ë¬¸ë‚ ì§œ %s | %s", order_date, order_code);
 
 				m_list->InsertItem(idx, list_itm, 30);
 				m_list->SetItemText(idx, 0, list_itm);
@@ -159,19 +158,19 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			}
 
 			recSet.Close();
-			m_list->InsertItem(idx, L"+ »õ ÁÖ¹® ÇÏ±â", 30);
-			m_list->SetItemText(idx, 0, L"+ »õ ÁÖ¹® ÇÏ±â");
+			m_list->InsertItem(idx, L"+ ìƒˆ ì£¼ë¬¸ í•˜ê¸°", 30);
+			m_list->SetItemText(idx, 0, L"+ ìƒˆ ì£¼ë¬¸ í•˜ê¸°");
 			break;
 		}
 		case 2:
 		{
-			// ¹ÝÇ° °ü¸®
+			// ë°˜í’ˆ ê´€ë¦¬
 		
-			// È­¸é ½ºÅ¸ÀÏ ÁöÁ¤
+			// í™”ë©´ ìŠ¤íƒ€ì¼ ì§€ì •
 			m_list->ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
 			m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
-			// È­¸é Å¬¸®¾î
+			// í™”ë©´ í´ë¦¬ì–´
 			if (m_list->GetItemCount() > 0)
 				DeleteContent(m_list);
 
@@ -180,14 +179,14 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			// recSet.Open(CRecordset::dynaset, L"select distinct RETURN_CODE, RETURN_AMOUNT from RETURN order by RETURN_CODE");
 
 
-			m_list->InsertColumn(idx, L"¹ÝÇ° ¸ñ·Ï", LVCFMT_CENTER, 400);
+			m_list->InsertColumn(idx, L"ë°˜í’ˆ ëª©ë¡", LVCFMT_CENTER, 400);
 
 			while (!recSet.IsEOF())
 			{
 				CString order_date = L" ", order_list;
 				recSet.GetFieldValue(_T("ORDER_DATE"), order_date);
 				AfxExtractSubString(order_date, order_date, 0, ' ');
-				order_list.Format(L"ÁÖ¹®¹øÈ£ %d | %s", idx + 1000, order_date);
+				order_list.Format(L"ì£¼ë¬¸ë²ˆí˜¸ %d | %s", idx + 1000, order_date);
 
 				m_list->InsertItem(idx, order_list, 30);
 				m_list->SetItemText(idx, 0, order_list);
@@ -196,15 +195,15 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			}
 
 			recSet.Close();
-			m_list->InsertItem(idx, L"+ »õ ¹ÝÇ° ÇÏ±â", 30);
-			m_list->SetItemText(idx, 0, L"+ »õ ¹ÝÇ° ÇÏ±â");
+			m_list->InsertItem(idx, L"+ ìƒˆ ë°˜í’ˆ í•˜ê¸°", 30);
+			m_list->SetItemText(idx, 0, L"+ ìƒˆ ë°˜í’ˆ í•˜ê¸°");
 			break;
 		
 			break;
 		}
 		case 3:
 		{
-			// ÆÇ¸Å °ü¸®
+			// íŒë§¤ ê´€ë¦¬
 
 
 			if (m_list->GetItemCount() > 0)
@@ -214,7 +213,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		}
 		case 4:
 		{
-			// ÀÚ±Ý °ü¸®
+			// ìžê¸ˆ ê´€ë¦¬
 
 			if (m_list->GetItemCount() > 0)
 				DeleteContent(m_list);
@@ -223,7 +222,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		}
 		case 6:
 		{
-			// ÇöÀç Á÷¿ø
+			// í˜„ìž¬ ì§ì›
 			if (m_list->GetItemCount() > 0)
 				DeleteContent(m_list);
 
@@ -231,7 +230,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		}
 		case 7:
 		{
-			// Á÷¿ø ÀÌ·Â
+			// ì§ì› ì´ë ¥
 			if (m_list->GetItemCount() > 0)
 				DeleteContent(m_list);
 
@@ -241,7 +240,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		}
 		case 8:
 		{
-			// ¹°Ç° °ü¸®
+			// ë¬¼í’ˆ ê´€ë¦¬
 			if (m_list->GetItemCount() > 0)
 				DeleteContent(m_list);
 
@@ -249,9 +248,9 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		}
 		default:
 		{
-			// UOS25 ·Î°íÈ­¸é
+			// UOS25 ë¡œê³ í™”ë©´
 
-			CClientDC pDC(this);//ÇöÀç ´ÙÀÌ¾ó·Î±×ÀÇ Å¸ÀÌÆ²¹Ù¸¦ Á¦¿ÜÇÑ ¿µ¿ªÀ» ¾ò´Â´Ù.
+			CClientDC pDC(this);//í˜„ìž¬ ë‹¤ì´ì–¼ë¡œê·¸ì˜ íƒ€ì´í‹€ë°”ë¥¼ ì œì™¸í•œ ì˜ì—­ì„ ì–»ëŠ”ë‹¤.
 			CDC memDC;
 			CPen pen;
 			CBrush brush;
@@ -265,17 +264,17 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			pDC.SelectObject(p);
 			pDC.SelectObject(b);
 
-			memDC.CreateCompatibleDC(&pDC);//CDC¿Í CClinetDC¸¦ ¿¬°áÇØÁÖ´Â ±¸¹®
+			memDC.CreateCompatibleDC(&pDC);//CDCì™€ CClinetDCë¥¼ ì—°ê²°í•´ì£¼ëŠ” êµ¬ë¬¸
 
 			CBitmap m_bitMain;
 			m_bitMain.LoadBitmapW(IDB_LOGO);
 			CBitmap *oldbm = memDC.SelectObject(&m_bitMain);
 			//	pDC.StretchBlt(17, 23, 300, 300, &memDC, 0, 0, 350, 350, SRCCOPY);
 			pDC.BitBlt(150, 100, 888, 396, &memDC, 0, 0, SRCCOPY);
-			//bitbltÇÔ¼ö¸¦ »ç¿ëÇÏ¿© ½ÇÁ¦ bmp±×¸²ÆÄÀÏÀ» È­¸é¿¡ Ãâ·ÂÇÑ´Ù.
-			//ÁÂÇ¥ 10,10À§Ä¡¿¡ 300*300ÀÇ Å©±â·Î ±×¸²À» ±×¸°´Ù.
-			//¿øº»±×¸²ÀÇ ¿ÞÂÊ À§ Æ÷ÀÎÆ®¸¦ 0,0À¸·Î ¼³Á¤ÇÑ´Ù.
-			//bmpÆÄÀÏÀ» »ç¿ëÇÏ¹Ç·Î ¸ðµç Ãâ·ÂÀº ÇÈ¼¿À» ±âÁØÀ¸·Î ÇÑ´Ù.
+			//bitbltí•¨ìˆ˜ë¥¼ ì‚¬ìš©í•˜ì—¬ ì‹¤ì œ bmpê·¸ë¦¼íŒŒì¼ì„ í™”ë©´ì— ì¶œë ¥í•œë‹¤.
+			//ì¢Œí‘œ 10,10ìœ„ì¹˜ì— 300*300ì˜ í¬ê¸°ë¡œ ê·¸ë¦¼ì„ ê·¸ë¦°ë‹¤.
+			//ì›ë³¸ê·¸ë¦¼ì˜ ì™¼ìª½ ìœ„ í¬ì¸íŠ¸ë¥¼ 0,0ìœ¼ë¡œ ì„¤ì •í•œë‹¤.
+			//bmpíŒŒì¼ì„ ì‚¬ìš©í•˜ë¯€ë¡œ ëª¨ë“  ì¶œë ¥ì€ í”½ì…€ì„ ê¸°ì¤€ìœ¼ë¡œ í•œë‹¤.
 
 			break;
 		}
@@ -289,22 +288,22 @@ void CContentView::OnInitialUpdate()
 {
 	CListView::OnInitialUpdate();
 
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ëž˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 	
 	//m_list = &GetListCtrl();
 	//m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES );
 	
-	// ÄÃ·³À» º¸ÀÌÁö ¾Êµµ·Ï ÇÏ´Â ½ºÅ¸ÀÏ
+	// ì»¬ëŸ¼ì„ ë³´ì´ì§€ ì•Šë„ë¡ í•˜ëŠ” ìŠ¤íƒ€ì¼
 	//m_list->ModifyStyle(0, LVS_NOCOLUMNHEADER);
 }
 
 /*
-	¸®½ºÆ®¸¦ ´õºíÅ¬¸¯ÇÒ °æ¿ì ÆäÀÌÁö¿¡ µû¶ó ÇÊ¿äÇÑ ´ÙÀÌ¾ó·Î±× ¶ç¿î´Ù
+	ë¦¬ìŠ¤íŠ¸ë¥¼ ë”ë¸”í´ë¦­í•  ê²½ìš° íŽ˜ì´ì§€ì— ë”°ë¼ í•„ìš”í•œ ë‹¤ì´ì–¼ë¡œê·¸ ë„ìš´ë‹¤
 */
 void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>( pNMHDR );
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 	switch (CUR_CONTENT)
 	{
@@ -312,19 +311,19 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 		{
 			if (pNMItemActivate->iItem != -1)
 			{
-				// Å¬¸¯µÈ Çà ³Ñ¹ö°ªÀ» ¹Þ¾Æ¿Â´Ù
+				// í´ë¦­ëœ í–‰ ë„˜ë²„ê°’ì„ ë°›ì•„ì˜¨ë‹¤
 				NM_LISTVIEW * pNMListView = (NM_LISTVIEW*) pNMHDR;
 				int cur_idx = pNMListView->iItem;
 
 			
-				// idx¹øÂ° ÇàÀÇ ¸Ç ¾Õ °ªÀ» ¹Þ¾Æ¿Í ÀÓ½Ã ½ºÆ®¸µÀ¸·Î ÀúÀå
-				// ¼±ÅÃµÈ Ç×¸ñÀÇ CString°ªÀ» ¹Þ¾Æ¿À´Â ÄÚµåÀÔ´Ï´Ù
+				// idxë²ˆì§¸ í–‰ì˜ ë§¨ ì•ž ê°’ì„ ë°›ì•„ì™€ ìž„ì‹œ ìŠ¤íŠ¸ë§ìœ¼ë¡œ ì €ìž¥
+				// ì„ íƒëœ í•­ëª©ì˜ CStringê°’ì„ ë°›ì•„ì˜¤ëŠ” ì½”ë“œìž…ë‹ˆë‹¤
 				CString tmp_str;
 				tmp_str = m_list->GetItemText(cur_idx, 0);
 
-				if (tmp_str == "+ »õ ÁÖ¹® ÇÏ±â")
+				if (tmp_str == "+ ìƒˆ ì£¼ë¬¸ í•˜ê¸°")
 				{
-					//»õ ÁÖ¹®ÇÏ±â Ç×¸ñ ¼±ÅÃ ½Ã
+					//ìƒˆ ì£¼ë¬¸í•˜ê¸° í•­ëª© ì„ íƒ ì‹œ
 					dlg_new_order = new NewOrder();
 					dlg_new_order->Create(NewOrder::IDD);
 					dlg_new_order->ShowWindow(SW_SHOW);
@@ -333,7 +332,7 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 
 				// current_date = m_list->GetItemText(cur_idx, 0);
 			
-				// ´ÙÀÌ¾ó·Î±× »ý¼º
+				// ë‹¤ì´ì–¼ë¡œê·¸ ìƒì„±
 				dlg_manage_order = new CManageOrder(this, cur_idx);
 				dlg_manage_order->Create(CManageOrder::IDD);
 				dlg_manage_order->ShowWindow(SW_SHOW);
@@ -347,29 +346,29 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 		}
 		case 2:
 		{
-			//¹ÝÇ° °ü¸® ¼±ÅÃ
+			//ë°˜í’ˆ ê´€ë¦¬ ì„ íƒ
 
 			break;
 		}
 		case 3:
 		{
-			// ÆÇ¸Å °ü¸® ¼±ÅÃ
+			// íŒë§¤ ê´€ë¦¬ ì„ íƒ
 		}
 		case 4:
 		{
-			// ÀÚ±Ý °ü¸® ¼±ÅÃ
+			// ìžê¸ˆ ê´€ë¦¬ ì„ íƒ
 		}
 		case 6:
 		{
-			// Á÷¿ø °ü¸® ¼±ÅÃ
+			// ì§ì› ê´€ë¦¬ ì„ íƒ
 		}
 		case 7:
 		{
-			// Á÷¿ø ÀÌ·Â ¼±ÅÃ
+			// ì§ì› ì´ë ¥ ì„ íƒ
 		}
 		case 8:
 		{
-			// ¹°Ç° °ü¸® ¼±ÅÃ
+			// ë¬¼í’ˆ ê´€ë¦¬ ì„ íƒ
 		}
 	default:
 		break;
