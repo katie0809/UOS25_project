@@ -1,14 +1,14 @@
 #pragma once
 #include "ManageOrder.h"
 #include "NewOrder.h"
-// CContentView ºäÀÔ´Ï´Ù.
+// CContentView ë·°ì…?ˆë‹¤.
 
 class CContentView : public CListView
 {
 	DECLARE_DYNCREATE(CContentView)
 
 protected:
-	CContentView();           // µ¿Àû ¸¸µé±â¿¡ »ç¿ëµÇ´Â protected »ı¼ºÀÚÀÔ´Ï´Ù.
+	CContentView();           // ?™ì  ë§Œë“¤ê¸°ì— ?¬ìš©?˜ëŠ” protected ?ì„±?ì…?ˆë‹¤.
 	virtual ~CContentView();
 
 /*
@@ -18,8 +18,9 @@ public:
 	int CUR_CONTENT;
 	CString current_date;
 	CListCtrl * m_list;
-	CManageOrder * dlg_manage_order; //	ÁÖ¹® °ü¸® ´ÙÀÌ¾ó·Î±× Áö½Ã Æ÷ÀÎÅÍ
-	NewOrder * dlg_new_order; // »õ ÁÖ¹® Ãß°¡ ´ÙÀÌ¾ó·Î±× Áö½Ã Æ÷ÀÎÅÍ
+	CSalesView * sales_view;
+	CManageOrder * dlg_manage_order; //	ì£¼ë¬¸ ê´€ë¦??¤ì´?¼ë¡œê·?ì§€???¬ì¸??
+	NewOrder * dlg_new_order; // ??ì£¼ë¬¸ ì¶”ê? ?¤ì´?¼ë¡œê·?ì§€???¬ì¸??
 public:
 
 #ifdef _DEBUG
@@ -38,6 +39,5 @@ public:
 	virtual void OnInitialUpdate();
 	afx_msg void OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult);
 };
-
 
 
