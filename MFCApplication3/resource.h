@@ -16,7 +16,6 @@
 #define IDC_                            1007
 #define IDC_RETURN                      1007
 #define IDC_CONFIRM                     1010
-#define ID_del_a                        1011
 #define IDC_ORDER_LIST                  1012
 #define IDC_NEW_ORDER                   1014
 

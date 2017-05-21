@@ -2,7 +2,9 @@
 #pragma once
 #include "afxwin.h"
 #include "afxcmn.h"
-
+#include <vector>
+#include <string>
+using namespace std;
 
 // CManageOrder 대화 상자입니다.
 
@@ -18,6 +20,7 @@ public:
 	CString current_date; // 어떤 날짜의 주문목록을 불러와야 하는지~
 	CDatabase db_order;
 	int order_id;
+	vector<vector<int> > chked_itm; // 주문 상세 내역에서 체크된 아이템의 내용을 저장하는 벡터배열
 /*
 	Operations
 */
@@ -27,6 +30,7 @@ public:
 public:
 	CManageOrder(CWnd* pParent = NULL);
 	CManageOrder(CWnd * pParent, int selected_itm);
+
 	// 표준 생성자입니다.
 	virtual ~CManageOrder();
 
@@ -39,7 +43,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual BOOL OnInitDialog();
-	CCheckListBox m_orderList;
 	afx_msg void OnBnClickedReturn();
 	afx_msg void OnBnClickedConfirm();
 	afx_msg void OnBnClickedOk();

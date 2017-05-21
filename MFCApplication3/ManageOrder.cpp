@@ -50,8 +50,6 @@ CManageOrder::~CManageOrder()
 void CManageOrder::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_LIST1, m_orderList);
-	DDX_Control(pDX, IDC_LIST2, m_orderlist);
 }
 
 
@@ -101,7 +99,7 @@ BOOL CManageOrder::OnInitDialog()
 
 void CManageOrder::ShowData(CDatabase & db_order)
 {
-
+/*
 	CRecordset recSet(&db_order);
 	CString strSQL, strNAME, strPRICE, strREMAIN, strISRETURN;
 
@@ -128,7 +126,7 @@ void CManageOrder::ShowData(CDatabase & db_order)
 	}
 
 	recSet.Close();
-
+	*/
 }
 
 
@@ -136,9 +134,9 @@ void CManageOrder::ShowData(CDatabase & db_order)
 void CManageOrder::OnBnClickedReturn()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	// checkbox로 선택된 아이템을 재주문한다.
-
-	int itemNum = m_orderList.GetCount(); //리스트에 있는 아이템 개수를 얻어온다
+	// checkbox로 선택된 아이템을 주문수정한다.
+/*
+	int itemNum = m_orderlist.GetItemCount(); //리스트에 있는 아이템 개수를 얻어온다
 	int *returnItm, returnItmCnt = 0; //반품 항목의 인덱스를 저장할 배열과 재주문 항목의 개수
 	returnItm = new int[itemNum]; 
 
@@ -147,10 +145,10 @@ void CManageOrder::OnBnClickedReturn()
 		//리스트의 모든 아이템을 순회하면서 체크되었는지 확인 후
 		//체크된 아이템에 한해 delete한다
 
-		if (m_orderList.GetCheck(i) == BST_CHECKED)
+		if (m_orderlist.GetCheck(i) == BST_CHECKED)
 		{
 			CString SQL_deleteItm, itmName, str, str1;
-			m_orderList.GetText(i, itmName);
+			m_orderlist.GetText(i, itmName);
 			AfxExtractSubString(itmName, itmName, 0, ' ');
 			//MessageBox(itmName);
 
@@ -168,7 +166,7 @@ void CManageOrder::OnBnClickedReturn()
 	//체크된 항목 리스트화면에서 삭제하고 메세지 띄운다
 	for (int i = 0; i <= returnItmCnt; i++)
 		m_orderList.DeleteString(i);
-
+		*/
 	MessageBox(L"재주문 완료");
 }
 
@@ -176,6 +174,7 @@ void CManageOrder::OnBnClickedReturn()
 void CManageOrder::OnBnClickedConfirm()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	// 주문 목록 전체의 아이템에 대해 주문 확정
 }
 
 

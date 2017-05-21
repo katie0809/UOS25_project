@@ -18,8 +18,7 @@ public:
 	int CUR_CONTENT;
 	CString current_date;
 	CListCtrl * m_list;
-	CSalesView * sales_view;
-	CManageOrder * dlg_manage_order; //	ì£¼ë¬¸ ê´€ë¦??¤ì´?¼ë¡œê·?ì§€???¬ì¸??
+	CManageOrder * dlg_manage_order; //	
 	NewOrder * dlg_new_order; // ??ì£¼ë¬¸ ì¶”ê? ?¤ì´?¼ë¡œê·?ì§€???¬ì¸??
 public:
 

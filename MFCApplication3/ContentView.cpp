@@ -129,19 +129,17 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			recSet.Open(CRecordset::dynaset, L"select distinct order_date, order_id from order_list order by order_id");
 			// recSet.Open(CRecordset::dynaset, L"select distinct ORDER_CODE from _ORDER order by ORDER_CODE");
 
-			// m_list->InsertColumn(idx, L"ì£¼ë¬¸ ? ì§œ", LVCFMT_CENTER, 400);
-			m_list->InsertColumn(idx, L"ì£¼ë¬¸ ëª©ë¡", LVCFMT_CENTER, 400);
-			// m_list->InsertColumn(idx, L"ì£¼ë¬¸ ?˜ëŸ‰", LVCFMT_CENTER, 400);
+			m_list->InsertColumn(0, L"ÁÖ¹® ÄÚµå", LVCFMT_CENTER, 400);
+			
 
 			while (!recSet.IsEOF())
 			{
 				CString order_date = L" ", order_list;
 				recSet.GetFieldValue(_T("ORDER_DATE"), order_date);
 				AfxExtractSubString(order_date, order_date, 0, ' ');
-				order_list.Format(L"ì£¼ë¬¸ë²ˆí˜¸ %d | %s", idx+1000, order_date);
+				order_list.Format(L"ÁÖ¹®ÄÚµå %d | %s", idx+1000, order_date);
 
-				m_list->InsertItem(idx, order_list, 30);
-				m_list->SetItemText(idx, 0, order_list);
+				m_list->InsertItem(idx, order_list, 0);
 				idx++;
 				recSet.MoveNext();
 			
@@ -159,8 +157,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			}
 
 			recSet.Close();
-			m_list->InsertItem(idx, L"+ ??ì£¼ë¬¸ ?˜ê¸°", 30);
-			m_list->SetItemText(idx, 0, L"+ ??ì£¼ë¬¸ ?˜ê¸°");
+			m_list->InsertItem(idx, L"+ »õ ÁÖ¹®ÇÏ±â", 0);
 			break;
 		}
 		case 2:
@@ -180,7 +177,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			// recSet.Open(CRecordset::dynaset, L"select distinct RETURN_CODE, RETURN_AMOUNT from RETURN order by RETURN_CODE");
 
 
-			m_list->InsertColumn(idx, L"ë°˜í’ˆ ëª©ë¡", LVCFMT_CENTER, 400);
+			m_list->InsertColumn(idx, L"¹İÇ° ¸ñ·Ï", LVCFMT_CENTER, 400);
 
 			while (!recSet.IsEOF())
 			{
@@ -322,7 +319,7 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 				CString tmp_str;
 				tmp_str = m_list->GetItemText(cur_idx, 0);
 
-				if (tmp_str == "+ ??ì£¼ë¬¸ ?˜ê¸°")
+				if (tmp_str == "+ »õ ÁÖ¹®ÇÏ±â")
 				{
 					//??ì£¼ë¬¸?˜ê¸° ??ª© ? íƒ ??
 					dlg_new_order = new NewOrder();
