@@ -50,6 +50,8 @@ CManageOrder::~CManageOrder()
 void CManageOrder::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_RETURN_LIST, m_returnList);
+	DDX_Control(pDX, IDC_REORDER_LIST, m_reorderList);
 }
 
 
@@ -57,6 +59,7 @@ BEGIN_MESSAGE_MAP(CManageOrder, CDialogEx)
 	ON_BN_CLICKED(IDC_RETURN, &CManageOrder::OnBnClickedReturn)
 	ON_BN_CLICKED(IDC_CONFIRM, &CManageOrder::OnBnClickedConfirm)
 	ON_BN_CLICKED(IDOK, &CManageOrder::OnBnClickedOk)
+	ON_BN_CLICKED(IDC_REORDER, &CManageOrder::OnBnClickedReorder)
 END_MESSAGE_MAP()
 
 
@@ -183,4 +186,10 @@ void CManageOrder::OnBnClickedOk()
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	CDialogEx::OnOK();
 	db_order.Close();
+}
+
+
+void CManageOrder::OnBnClickedReorder()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }

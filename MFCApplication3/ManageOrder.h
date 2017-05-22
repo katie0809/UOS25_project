@@ -47,4 +47,7 @@ public:
 	afx_msg void OnBnClickedConfirm();
 	afx_msg void OnBnClickedOk();
 	CListCtrl m_orderlist;
+	afx_msg void OnBnClickedReorder();
+	CListCtrl m_returnList;
+	CListCtrl m_reorderList;
 };

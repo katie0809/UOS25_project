@@ -13,11 +13,14 @@
 #define IDC_LIST1                       1000
 #define IDC_DATETIMEPICKER2             1004
 #define IDC_ORDER                       1006
-#define IDC_                            1007
-#define IDC_RETURN                      1007
+#define IDC_REORDER                     1007
 #define IDC_CONFIRM                     1010
 #define IDC_ORDER_LIST                  1012
 #define IDC_NEW_ORDER                   1014
+#define IDC_REORDER_LIST                1015
+#define IDC_BUTTON1                     1016
+#define IDC_RETURN                      1016
+#define IDC_RETURN_LIST                 1017
 
 // Next default values for new objects
 // 
@@ -25,7 +28,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        318
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1015
+#define _APS_NEXT_CONTROL_VALUE         1018
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif
