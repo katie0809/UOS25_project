@@ -165,7 +165,7 @@ void NewOrder::OnBnClickedOrder()
 		else continue;
 	}
 
-
+	MessageBox(L"주문 완료");
 	OnBnClickedOk();
 }
 

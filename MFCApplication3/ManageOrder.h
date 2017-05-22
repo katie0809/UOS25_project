@@ -43,6 +43,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual BOOL OnInitDialog();
+	void ModifyStyle();
 	afx_msg void OnBnClickedReturn();
 	afx_msg void OnBnClickedConfirm();
 	afx_msg void OnBnClickedOk();
