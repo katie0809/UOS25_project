@@ -88,12 +88,12 @@ void NewOrder::ShowData(CDatabase & db_neworder)
 	m_newOrder.SetExtendedStyle(LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
 	
 	// 컬럼 삽입
-	m_newOrder.InsertColumn(0, L"주문수량", LVCFMT_CENTER, 80);
-	m_newOrder.InsertColumn(1, L"상품코드", LVCFMT_CENTER, 100);
-	m_newOrder.InsertColumn(2, L"상품명", LVCFMT_CENTER, 100);
-	m_newOrder.InsertColumn(3, L"제조사", LVCFMT_CENTER, 50);
-	m_newOrder.InsertColumn(4, L"가격", LVCFMT_CENTER, 50);
-	m_newOrder.InsertColumn(5, L"재고수량", LVCFMT_CENTER, 50);
+	m_newOrder.InsertColumn(1, L"주문수량", LVCFMT_CENTER, 80);
+	m_newOrder.InsertColumn(2, L"상품코드", LVCFMT_CENTER, 150);
+	m_newOrder.InsertColumn(3, L"상품명", LVCFMT_CENTER, 150);
+	m_newOrder.InsertColumn(4, L"제조사", LVCFMT_CENTER, 100);
+	m_newOrder.InsertColumn(5, L"가격", LVCFMT_CENTER, 100);
+	m_newOrder.InsertColumn(6, L"재고수량", LVCFMT_CENTER, 80);
 
 	// 쿼리문을 통해 특정 날짜의 주문목록만 받아온다
 	strSQL.Format(L"SELECT * FROM PRODUCT");

@@ -116,44 +116,41 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	{
 		case 1:	
 		{
-			// ì£¼ë¬¸ ê´€ë¦?
-			// m_list = &GetListCtrl();
+			// Show Order List
+
+			CString order_code, order_num, order_date, order_sum;
+			int idx = 0;
 
 			m_list->ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
 			m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
 			if (m_list->GetItemCount() > 0)
-				DeleteContent(m_list);
+				DeleteContent(m_list); // If there are any left contents on the pane, delete all
 
-			int idx = 1;
-			recSet.Open(CRecordset::dynaset, L"select distinct order_date, order_id from order_list order by order_id");
-			// recSet.Open(CRecordset::dynaset, L"select distinct ORDER_CODE from _ORDER order by ORDER_CODE");
+			// Get the distinct order code and total sum of an amount of the products of the order
+			recSet.Open(CRecordset::dynaset, L"SELECT DISTINCT ORDER_CODE, SUM(ORDER_AMOUNT) FROM ORDER_ GROUP BY ORDER_CODE");
 
-			m_list->InsertColumn(0, L"ÁÖ¹® ÄÚµå", LVCFMT_CENTER, 400);
-			
+			m_list->InsertColumn(1, L"ÁÖ¹® ¹øÈ£", LVCFMT_CENTER, 150);
+			m_list->InsertColumn(2, L"ÁÖ¹® ³¯Â¥", LVCFMT_CENTER, 150);
+			m_list->InsertColumn(3, L"ÁÖ¹® ¼ö·®", LVCFMT_CENTER, 150);
+
 
 			while (!recSet.IsEOF())
 			{
-				CString order_date = L" ", order_list;
-				recSet.GetFieldValue(_T("ORDER_DATE"), order_date);
-				AfxExtractSubString(order_date, order_date, 0, ' ');
-				order_list.Format(L"ÁÖ¹®ÄÚµå %d | %s", idx+1000, order_date);
+				recSet.GetFieldValue(_T("ORDER_CODE"), order_code);
+				recSet.GetFieldValue(_T("SUM(ORDER_AMOUNT)"), order_sum);
+				
+				// Extract date and num from order code
+				order_date = order_code.Left(8);
+				order_num = order_code.Right(5);
 
-				m_list->InsertItem(idx, order_list, 0);
+				// Insert itm into list
+				int nListitm = m_list->InsertItem(0, order_num, 0);
+				m_list->SetItem(nListitm, 1, LVFIF_TEXT, order_date, 0, 0, 0, NULL);
+				m_list->SetItem(nListitm, 2, LVFIF_TEXT, order_sum, 0, 0, 0, NULL);
+
 				idx++;
 				recSet.MoveNext();
-			
-				/*
-				CString order_code = L" ", order_date;
-				recSet.GetFieldValue(_T("ORDER_CODE"), order_code);;
-				order_date = order_code.Left(8); //ì£¼ë¬¸ ì½”ë“œ?ì„œ ì£¼ë¬¸? ì§œ ì¶”ì¶œ
-				list_itm.Format(L"ì£¼ë¬¸? ì§œ %s | %s", order_date, order_code);
-
-				m_list->InsertItem(idx, list_itm, 30);
-				m_list->SetItemText(idx, 0, list_itm);
-				idx++;
-				recSet.MoveNext();
-				*/
 			}
 
 			recSet.Close();
@@ -162,9 +159,9 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		}
 		case 2:
 		{
-			// ë°˜í’ˆ ê´€ë¦?
+			// RETURN
 		
-			// ?”ë©´ ?¤í???ì§€??
+			// Set the style of Return list
 			m_list->ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
 			m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
