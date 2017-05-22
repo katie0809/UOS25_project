@@ -24,7 +24,6 @@ NewOrder::~NewOrder()
 void NewOrder::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	//DDX_Control(pDX, IDC_NEW_ORDER, m_neworderList);
 	DDX_Control(pDX, IDC_NEW_ORDER, m_newOrder);
 }
 
@@ -50,7 +49,6 @@ BOOL NewOrder::OnInitDialog()
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 	// 데이터베이스와의 연결
-	// CDatabase db_order;
 
 	TRY
 	{

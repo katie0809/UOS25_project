@@ -23,24 +23,12 @@ CManageOrder::CManageOrder(CWnd* pParent /*=NULL)
 }
 */
 //생성자 오버로드
-CManageOrder::CManageOrder(CWnd *pParent, int selected_itm)
+CManageOrder::CManageOrder(CWnd *pParent, CString selected_itm)
 	: CDialogEx(IDD_MANAGE_ORDER, pParent)
 {
-	order_id = selected_itm + 1;
-	/*
-	// 2017-03-09 00:00:00과 같은 값을 받아와 09-MAR-2017 텍스트로 변환해주는 코드입니다
+	CTime cTime = CTime::GetCurrentTime();
 
-	CString year, month, day;
-
-	AfxExtractSubString(selected_itm, selected_itm, 0, ' ');
-	AfxExtractSubString(year, selected_itm, 0, '-');
-	AfxExtractSubString(month, selected_itm, 1, '-');
-	AfxExtractSubString(day, selected_itm, 2, '-');
-
-	CString Calendar[12] = { L"JAN" ,L"FEB" ,L"MAR" ,L"APR" ,L"MAY" ,L"JUN" ,L"JUL" ,L"AUG" ,L"SEP" ,L"OCT" ,L"NOV" ,L"DEC" };
-
-	current_date.Format(L"%s-%s-%s", day, Calendar[_ttoi(month)-1], year);
-	*/
+	order_id = selected_itm;
 }
 
 CManageOrder::~CManageOrder()
@@ -52,6 +40,7 @@ void CManageOrder::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_RETURN_LIST, m_returnList);
 	DDX_Control(pDX, IDC_REORDER_LIST, m_reorderList);
+	DDX_Control(pDX, IDC_ORDER_LIST, m_orderList);
 }
 
 
@@ -102,34 +91,53 @@ BOOL CManageOrder::OnInitDialog()
 
 void CManageOrder::ShowData(CDatabase & db_order)
 {
-/*
+
 	CRecordset recSet(&db_order);
-	CString strSQL, strNAME, strPRICE, strREMAIN, strISRETURN;
+	CString strSQL, strNAME, strPRICE, strREMAIN, strCODE, strMAKER, strORDERAMT;
+
+	// Modify list style
+	m_orderList.ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
+	m_orderList.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES | LVS_EX_CHECKBOXES);
 
 	// 쿼리문을 통해 특정 날짜의 주문목록만 받아온다
-	strSQL.Format(L"SELECT * FROM order_list WHERE order_id = %d", order_id);
+	// Get product code, product name, product maker, product price, order amount, product stock amount, event detail
+	strSQL.Format(L"select product.prod_code, prod_name, prod_maker, prod_price, order_amount, prod_stock_amount from product inner join order_ on order_.order_code = '%s' and order_.prod_code = product.prod_code", order_id);
 	recSet.Open(CRecordset::dynaset, strSQL);
+
+	// Create Column
+	m_orderList.InsertColumn(1, L"상품 코드", LVCFMT_CENTER, 80);
+	m_orderList.InsertColumn(2, L"상품명", LVCFMT_CENTER, 100);
+	m_orderList.InsertColumn(3, L"제조시", LVCFMT_CENTER, 100);
+	m_orderList.InsertColumn(4, L"상품 가격", LVCFMT_CENTER, 100);
+	m_orderList.InsertColumn(5, L"주문 수량", LVCFMT_CENTER, 50);
+	m_orderList.InsertColumn(6, L"재고 수량", LVCFMT_CENTER, 50);
 
 	// 받아온 테이블에 남은 데이터가 없을 때까지 실행
 	while (!recSet.IsEOF())
 	{
 		int idx = 0;
 		
+		recSet.GetFieldValue(_T("PROD_CODE"), strCODE);
 		recSet.GetFieldValue(_T("PROD_NAME"), strNAME);
+		recSet.GetFieldValue(_T("PROD_MAKER"), strMAKER);
 		recSet.GetFieldValue(_T("PROD_PRICE"), strPRICE);
-		recSet.GetFieldValue(_T("PROD_REMAIN"), strREMAIN);
-		recSet.GetFieldValue(_T("PROD_ISRETURN"), strISRETURN);
+		recSet.GetFieldValue(_T("ORDER_AMOUNT"), strORDERAMT);
+		recSet.GetFieldValue(_T("PROD_STOCK_AMOUNT"), strREMAIN);
 
-		CString str;
-		str.Format(L"%s \t %s \t %s \t %s", strNAME, strPRICE, strREMAIN, strISRETURN);
-		m_orderList.AddString(str);
+		// insert data into list
+		int nListitm = m_orderList.InsertItem(0, strCODE, 0);
+		m_orderList.SetItem(nListitm, 1, LVFIF_TEXT, strNAME, 0, 0, 0, NULL);
+		m_orderList.SetItem(nListitm, 2, LVFIF_TEXT, strMAKER, 0, 0, 0, NULL);
+		m_orderList.SetItem(nListitm, 3, LVFIF_TEXT, strPRICE, 0, 0, 0, NULL);
+		m_orderList.SetItem(nListitm, 4, LVFIF_TEXT, strORDERAMT, 0, 0, 0, NULL);
+		m_orderList.SetItem(nListitm, 5, LVFIF_TEXT, strREMAIN, 0, 0, 0, NULL);
 
 		//다음 레코드로 이동
 		recSet.MoveNext();
 	}
 
 	recSet.Close();
-	*/
+	
 }
 
 

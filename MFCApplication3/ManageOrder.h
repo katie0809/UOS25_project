@@ -17,9 +17,9 @@ class CManageOrder : public CDialogEx
 */
 public:
 	class CContentView * p_contentView;
-	CString current_date; // 어떤 날짜의 주문목록을 불러와야 하는지~
+	CString current_code; // 어떤 주문목록을 불러와야 하는지~
 	CDatabase db_order;
-	int order_id;
+	CString order_id;
 	vector<vector<int> > chked_itm; // 주문 상세 내역에서 체크된 아이템의 내용을 저장하는 벡터배열
 /*
 	Operations
@@ -29,7 +29,7 @@ public:
 
 public:
 	CManageOrder(CWnd* pParent = NULL);
-	CManageOrder(CWnd * pParent, int selected_itm);
+	CManageOrder(CWnd * pParent, CString selected_itm);
 
 	// 표준 생성자입니다.
 	virtual ~CManageOrder();
@@ -50,4 +50,5 @@ public:
 	afx_msg void OnBnClickedReorder();
 	CListCtrl m_returnList;
 	CListCtrl m_reorderList;
+	CListCtrl m_orderList;
 };

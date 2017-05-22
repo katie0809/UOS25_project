@@ -8,7 +8,7 @@ class CContentView : public CListView
 	DECLARE_DYNCREATE(CContentView)
 
 protected:
-	CContentView();           // ?™ì  ë§Œë“¤ê¸°ì— ?¬ìš©?˜ëŠ” protected ?ì„±?ì…?ˆë‹¤.
+	CContentView();          
 	virtual ~CContentView();
 
 /*
@@ -16,7 +16,6 @@ protected:
 */
 public:
 	int CUR_CONTENT;
-	CString current_date;
 	CListCtrl * m_list;
 	CManageOrder * dlg_manage_order; //	
 	NewOrder * dlg_new_order; // ??ì£¼ë¬¸ ì¶”ê? ?¤ì´?¼ë¡œê·?ì§€???¬ì¸??

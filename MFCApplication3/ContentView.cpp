@@ -88,7 +88,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	CUR_CONTENT = lHint;
 	m_list = &GetListCtrl();
 
-	// ?°ì´?°ë² ?´ìŠ¤???°ê²°
+	// Open database
 	CDatabase db_content;
 	CRecordset recSet(&db_content);
 
@@ -128,7 +128,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				DeleteContent(m_list); // If there are any left contents on the pane, delete all
 
 			// Get the distinct order code and total sum of an amount of the products of the order
-			recSet.Open(CRecordset::dynaset, L"SELECT DISTINCT ORDER_CODE, SUM(ORDER_AMOUNT) FROM ORDER_ GROUP BY ORDER_CODE");
+			recSet.Open(CRecordset::dynaset, L"SELECT DISTINCT ORDER_CODE, SUM(ORDER_AMOUNT) FROM ORDER_ GROUP BY ORDER_CODE ORDER BY ORDER_CODE");
 
 			m_list->InsertColumn(1, L"ÁÖ¹® ¹øÈ£", LVCFMT_CENTER, 150);
 			m_list->InsertColumn(2, L"ÁÖ¹® ³¯Â¥", LVCFMT_CENTER, 150);
@@ -306,29 +306,26 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 		{
 			if (pNMItemActivate->iItem != -1)
 			{
-				// ?´ë¦­?????˜ë²„ê°’ì„ ë°›ì•„?¨ë‹¤
+				// ¼±ÅÃµÈ ¾ÆÀÌÅÛÀÇ ÀÎµ¦½º ¹øÈ£¸¦ ¾ò´Â´Ù
 				NM_LISTVIEW * pNMListView = (NM_LISTVIEW*) pNMHDR;
 				int cur_idx = pNMListView->iItem;
 
-			
-				// idxë²ˆì§¸ ?‰ì˜ ë§???ê°’ì„ ë°›ì•„?€ ?„ì‹œ ?¤íŠ¸ë§ìœ¼ë¡??€??
-				// ? íƒ????ª©??CStringê°’ì„ ë°›ì•„?¤ëŠ” ì½”ë“œ?…ë‹ˆ??
-				CString tmp_str;
-				tmp_str = m_list->GetItemText(cur_idx, 0);
+				CString order_code, order_num, order_date;
+				order_num = m_list->GetItemText(cur_idx, 0);
+				order_date = m_list->GetItemText(cur_idx, 1);
+				order_code.Format(L"%s01%s", order_date, order_num);
 
-				if (tmp_str == "+ »õ ÁÖ¹®ÇÏ±â")
+				if (order_num == "+ »õ ÁÖ¹®ÇÏ±â")
 				{
-					//??ì£¼ë¬¸?˜ê¸° ??ª© ? íƒ ??
+					// Open dialog for new order
 					dlg_new_order = new NewOrder();
 					dlg_new_order->Create(NewOrder::IDD);
 					dlg_new_order->ShowWindow(SW_SHOW);
 					break;
 				}
-
-				// current_date = m_list->GetItemText(cur_idx, 0);
 			
-				// ?¤ì´?¼ë¡œê·??ì„±
-				dlg_manage_order = new CManageOrder(this, cur_idx);
+				// Open dialog using currently selected index num
+				dlg_manage_order = new CManageOrder(this, order_code);
 				dlg_manage_order->Create(CManageOrder::IDD);
 				dlg_manage_order->ShowWindow(SW_SHOW);
 
