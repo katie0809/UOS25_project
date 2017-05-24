@@ -141,7 +141,7 @@ void NewOrder::OnBnClickedOrder()
 	today.Format(L"%04d%02d%02d", cTime.GetYear(), cTime.GetMonth(), cTime.GetDay());
 
 	// Get the number of orders from ORDER_ table
-	recSet.Open(CRecordset::dynaset, L"SELECT COUNT(DISTINCT ORDER_CODE) FROM ORDER_");
+	recSet.Open(CRecordset::dynaset, L"SELECT COUNT(DISTINCT ORDER_CODE) FROM ORDER_LIST");
 	recSet.GetFieldValue(L"COUNT(DISTINCTORDER_CODE)", dbItmcnt);
 	
 	// Convert dbItmcnt to int data, and increase the value
@@ -157,8 +157,8 @@ void NewOrder::OnBnClickedOrder()
 		{
 			// If itm is checked, add data to database using SQLct
 			// 항목이 체크되었으면 SQL로 데이터베이스에 항목 추가
-			sql_list.Format(L"insert into order_(order_code, order_amount, order_amount_agree, prod_code) values ('%s01%05d', %s, 0, '%s')", today, tmp, m_newOrder.GetItemText(i,0), m_newOrder.GetItemText(i, 1));
-			//MessageBox(sql_list);
+			sql_list.Format(L"insert into order_list(order_code, prod_code, order_date, order_amount) values ('%s01%05d', '%s', '%s', %s)", today, tmp, m_newOrder.GetItemText(i,1), today, m_newOrder.GetItemText(i, 0));
+			// MessageBox(sql_list);
 			db_neworder.ExecuteSQL(sql_list);
 			idx++;
 		}

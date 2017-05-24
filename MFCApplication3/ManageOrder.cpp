@@ -15,20 +15,12 @@
 
 IMPLEMENT_DYNAMIC(CManageOrder, CDialogEx)
 
-/*
-CManageOrder::CManageOrder(CWnd* pParent /*=NULL)
-	: CDialogEx(IDD_MANAGE_ORDER, pParent)
-{
-
-}
-*/
 //생성자 오버로드
 CManageOrder::CManageOrder(CWnd *pParent, CString selected_itm)
 	: CDialogEx(IDD_MANAGE_ORDER, pParent)
 {
-	CTime cTime = CTime::GetCurrentTime();
-
 	order_id = selected_itm;
+
 }
 
 CManageOrder::~CManageOrder()
@@ -49,6 +41,9 @@ BEGIN_MESSAGE_MAP(CManageOrder, CDialogEx)
 	ON_BN_CLICKED(IDC_CONFIRM, &CManageOrder::OnBnClickedConfirm)
 	ON_BN_CLICKED(IDOK, &CManageOrder::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_REORDER, &CManageOrder::OnBnClickedReorder)
+	ON_NOTIFY(LVN_ENDLABELEDIT, IDC_REORDER_LIST, &CManageOrder::OnEndlabeleditReorderList)
+	ON_NOTIFY(LVN_ENDLABELEDIT, IDC_RETURN_LIST, &CManageOrder::OnEndlabeleditReturnList)
+//	ON_NOTIFY(LVN_DELETEITEM, IDC_ORDER_LIST, &CManageOrder::OnDeleteitemOrderList)
 END_MESSAGE_MAP()
 
 
@@ -126,12 +121,12 @@ void CManageOrder::ShowData(CDatabase & db_order)
 	CString strSQL, strNAME, strPRICE, strREMAIN, strCODE, strMAKER, strORDERAMT;
 
 	// Modify list style
-	m_orderList.ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
+	m_orderList.ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS, 0);
 	m_orderList.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES | LVS_EX_CHECKBOXES);
 
 	// 쿼리문을 통해 특정 날짜의 주문목록만 받아온다
 	// Get product code, product name, product maker, product price, order amount, product stock amount, event detail
-	strSQL.Format(L"select product.prod_code, prod_name, prod_maker, prod_price, order_amount, prod_stock_amount from product inner join order_ on order_.order_code = '%s' and order_.prod_code = product.prod_code", order_id);
+	strSQL.Format(L"select product.prod_code, prod_name, prod_maker, prod_price, order_amount, prod_stock_amount from product inner join order_list on order_list.order_code = '%s' and order_list.prod_code = product.prod_code", order_id);
 	recSet.Open(CRecordset::dynaset, strSQL);
 
 	// Create Column
@@ -179,7 +174,7 @@ void CManageOrder::OnBnClickedReturn()
 
 	int itemNum = m_orderList.GetItemCount(); //리스트에 있는 아이템 개수를 얻어온다
 	int *returnItm;
-	int returnItmCnt = 0; //반품 항목의 인덱스를 저장할 배열과 재주문 항목의 개수
+	int returnItmCnt = 0; //반품 항목의 인덱스를 저장할 배열과 반품 항목의 개수
 	returnItm = new int[itemNum];
 	CString strSQL, strNAME, strPRICE, strREMAIN, strCODE, strMAKER, strORDERAMT;
 
@@ -190,6 +185,8 @@ void CManageOrder::OnBnClickedReturn()
 
 		if (m_orderList.GetCheck(i) == TRUE)
 		{
+			
+
 			CString SQL_deleteItm, itmName, str, str1;
 			strCODE = m_orderList.GetItemText(i, 0);
 			strNAME = m_orderList.GetItemText(i, 1);
@@ -214,8 +211,9 @@ void CManageOrder::OnBnClickedReturn()
 			*/
 			//체크된 항목 리스트화면에서 삭제하고 메세지 띄운다
 			m_orderList.DeleteItem(i);
-
+			continue;
 		}
+		else continue;
 	}
 	
 }
@@ -263,8 +261,9 @@ void CManageOrder::OnBnClickedReorder()
 
 			//체크된 항목 리스트화면에서 삭제하고 메세지 띄운다
 			m_orderList.DeleteItem(i);
-
+			continue;
 		}
+		else continue;
 	}
 
 }
@@ -275,7 +274,106 @@ void CManageOrder::OnBnClickedConfirm()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	// 주문 목록 전체의 아이템에 대해 주문 확정
-	db_order.Close();
+
+	CString SQL, orderCode, prodCode, today, dbItmcnt, dbRetcnt;
+	int reorderNum, returnNum, confirmNum;
+	CTime cTime = CTime::GetCurrentTime();
+
+	// Get current YYYYMMDD from system
+	today.Format(L"%04d%02d%02d", cTime.GetYear(), cTime.GetMonth(), cTime.GetDay());
+
+	CRecordset recSet(&db_order);
+
+	// Get the number of orders from ORDER_ table
+	recSet.Open(CRecordset::dynaset, L"SELECT COUNT(DISTINCT ORDER_CODE), COUNT(DISTINCT RETURN_CODE) FROM ORDER_LIST, RETURN");
+	recSet.GetFieldValue(L"COUNT(DISTINCTORDER_CODE)", dbItmcnt);
+	recSet.GetFieldValue(L"COUNT(DISTINCTRETURN_CODE)", dbRetcnt);
+
+	// Convert dbItmcnt to int data, and increase the value
+	int tmp = 0;
+	tmp = _ttoi(dbItmcnt);
+	tmp++;
+
+	int tmp2;
+	tmp2 = _ttoi(dbRetcnt);
+
+	confirmNum = m_orderList.GetItemCount();
+	reorderNum = m_reorderList.GetItemCount();
+	returnNum = m_returnList.GetItemCount();
+
+	for (int i = 0; i < confirmNum; i++)
+	{
+		// 확정된 주문목록에 대해
+		// 현재 상품 주문 수량만큼 상품 테이블 해당 상품 재고에 추가
+		CString strStock, strOrderamt;
+		int stock = 0, orderamt = 0;
+
+		strStock = m_orderList.GetItemText(i, 5); // 현재 재고 개수
+		strOrderamt = m_orderList.GetItemText(i, 4); // 해당 상품의 주문 개수
+		stock = _ttoi(strStock);
+		orderamt = _ttoi(strOrderamt);
+		
+		stock += orderamt; // 재고에 주문 수량을 더해준다
+		
+		SQL.Format(L"UPDATE PRODUCT SET prod_stock_amount = %d WHERE prod_code = '%s'", stock, m_orderList.GetItemText(i, 0));
+		db_order.ExecuteSQL(SQL);
+	}
+
+	for (int i = 0; i < reorderNum; i++)
+	{
+		// 재주문 시
+		// 주문 테이블에 현재 주문을 재주문 코드로 넣어 새 주문을 만든다
+		SQL.Format(L"INSERT INTO ORDER_LIST(ORDER_CODE, PROD_CODE, ORDER_AMOUNT, ORDER_DATE, REORDER) VALUES ('%s01%05d', '%s', '%s', '%s', '%s')", today, tmp, m_reorderList.GetItemText(i,1), m_reorderList.GetItemText(i,0), today, order_id);
+		//MessageBox(L"SQL");
+		db_order.ExecuteSQL(SQL);
+
+		// 물품 테이블에 현재 상품에 대한 재고 수량을 주문수량 - 재주문 수량만큼 더해서 업데이트
+		CString stockAmt, reorderAmt, orderAmt; // 현재 재고, 재주문 수량, 주문 수량
+		int _stock, _reorder, _order;
+
+		stockAmt = m_reorderList.GetItemText(i, 6); // 현재 재고 개수
+		reorderAmt = m_reorderList.GetItemText(i, 0); // 재주문을 원하는 개수
+		orderAmt = m_reorderList.GetItemText(i, 5); // 원래 주문 개수
+
+		_stock = _ttoi(stockAmt);
+		_reorder = _ttoi(reorderAmt);
+		_order = _ttoi(orderAmt);
+
+		_order -= _reorder;
+		_stock += _order;
+
+		SQL.Format(L"UPDATE PRODUCT SET prod_stock_amount = %d WHERE prod_code = '%s'", _stock, m_reorderList.GetItemText(i, 1));
+		db_order.ExecuteSQL(SQL);
+	}
+
+	for (int i = 0; i < returnNum; i++)
+	{
+		// 반품 시
+		// 반품 테이블에 현재 주문에 대한 주문 반품 레코드를 새로 만든다
+
+		SQL.Format(L"INSERT INTO RETURN(RETURN_CODE, PROD_CODE, RETURN_CHECK_CODE, RETURN_AMOUNT) VALUES ('%s01%04d0', '%s', '%s', %s)", today, tmp2, m_returnList.GetItemText(i,1), order_id, m_returnList.GetItemText(i,0));
+		db_order.ExecuteSQL(SQL);
+
+		// 물품 테이블에 현재 상품에 대한 재고 수량을 주문수량 - 반품 수량만큼 더해서 업데이트
+		CString stockAmt, returnAmt, orderAmt; // 현재 재고, 재주문 수량, 주문 수량
+		int _stock, _return, _order;
+
+		stockAmt = m_returnList.GetItemText(i, 6); // 현재 재고 개수
+		returnAmt = m_returnList.GetItemText(i, 0); // 재주문을 원하는 개수
+		orderAmt = m_returnList.GetItemText(i, 5); // 원래 주문 개수
+
+		_stock = _ttoi(stockAmt);
+		_return = _ttoi(returnAmt);
+		_order = _ttoi(orderAmt);
+
+		_order -= _return;
+		_stock += _order;
+
+		SQL.Format(L"UPDATE PRODUCT SET prod_stock_amount = %d WHERE prod_code = '%s'", _stock, m_returnList.GetItemText(i, 1));
+		db_order.ExecuteSQL(SQL);
+	}
+
+	OnBnClickedOk();
 
 }
 
@@ -283,6 +381,55 @@ void CManageOrder::OnBnClickedConfirm()
 void CManageOrder::OnBnClickedOk()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	CDialogEx::OnOK();
 	db_order.Close();
+	CDialogEx::OnOK();
 }
+
+
+void CManageOrder::OnEndlabeleditReorderList(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	NMLVDISPINFO *pDispInfo = reinterpret_cast<NMLVDISPINFO*>( pNMHDR );
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>( pNMHDR );
+	CString orderAmt, modifiedAmt; // 상품의 재고, 수정된 수량
+	int SelectedIdx, _orderAmt, _modifiedAmt;
+
+	SelectedIdx = pNMItemActivate->iItem; // Get the index number of the edited item
+	orderAmt = m_reorderList.GetItemText(SelectedIdx, 5);
+	modifiedAmt = m_reorderList.GetItemText(SelectedIdx, 0);
+	_orderAmt = _ttoi(orderAmt);
+	_modifiedAmt = _ttoi(modifiedAmt);
+
+	// 원래 주문한 양보다 수정된 값이 크면 수정을 막는다
+	if( _orderAmt < _modifiedAmt )
+		*pResult = 0;
+	else *pResult = TRUE;
+
+}
+
+
+void CManageOrder::OnEndlabeleditReturnList(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	NMLVDISPINFO *pDispInfo = reinterpret_cast<NMLVDISPINFO*>( pNMHDR );
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>( pNMHDR );
+	CString orderAmt, modifiedAmt; // 상품의 재고, 수정된 수량
+	int SelectedIdx, _orderAmt, _modifiedAmt;
+
+	SelectedIdx = pNMItemActivate->iItem; // Get the index number of the edited item
+	orderAmt = m_returnList.GetItemText(SelectedIdx, 5);
+	modifiedAmt = m_returnList.GetItemText(SelectedIdx, 0);
+	_orderAmt = _ttoi(orderAmt);
+	_modifiedAmt = _ttoi(modifiedAmt);
+
+	MessageBox(orderAmt);
+	MessageBox(modifiedAmt);
+
+	// 원래 주문한 양보다 수정된 값이 크면 수정을 막는다
+	if (_orderAmt < _modifiedAmt)
+		*pResult = 0;
+	else *pResult = TRUE;
+}
+

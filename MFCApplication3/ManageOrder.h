@@ -14,13 +14,17 @@ class CManageOrder : public CDialogEx
 
 /*
 	Attributes
+
 */
 public:
 	class CContentView * p_contentView;
 	CString current_code; // 어떤 주문목록을 불러와야 하는지~
 	CDatabase db_order;
 	CString order_id;
+	int dbitmcnt; // 주문 확인 당시의 전체 주문의 개수
 	vector<vector<int> > chked_itm; // 주문 상세 내역에서 체크된 아이템의 내용을 저장하는 벡터배열
+
+									
 /*
 	Operations
 */
@@ -52,4 +56,6 @@ public:
 	CListCtrl m_returnList;
 	CListCtrl m_reorderList;
 	CListCtrl m_orderList;
+	afx_msg void OnEndlabeleditReorderList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnEndlabeleditReturnList(NMHDR *pNMHDR, LRESULT *pResult);
 };

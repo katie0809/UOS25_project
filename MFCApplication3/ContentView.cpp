@@ -128,7 +128,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				DeleteContent(m_list); // If there are any left contents on the pane, delete all
 
 			// Get the distinct order code and total sum of an amount of the products of the order
-			recSet.Open(CRecordset::dynaset, L"SELECT DISTINCT ORDER_CODE, SUM(ORDER_AMOUNT) FROM ORDER_ GROUP BY ORDER_CODE ORDER BY ORDER_CODE");
+			recSet.Open(CRecordset::dynaset, L"SELECT DISTINCT ORDER_CODE, SUM(ORDER_AMOUNT) FROM ORDER_LIST GROUP BY ORDER_CODE ORDER BY ORDER_CODE");
 
 			m_list->InsertColumn(1, L"ÁÖ¹® ¹øÈ£", LVCFMT_CENTER, 150);
 			m_list->InsertColumn(2, L"ÁÖ¹® ³¯Â¥", LVCFMT_CENTER, 150);
@@ -203,6 +203,8 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 
 			if (m_list->GetItemCount() > 0)
 				DeleteContent(m_list);
+
+			MessageBox(L"ÆÇ¸Å °ü¸® ¸Ş´ºÀÔ´Ï´Ù");
 
 			break;
 		}
@@ -349,6 +351,7 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 		case 4:
 		{
 			// ?ê¸ˆ ê´€ë¦?? íƒ
+
 		}
 		case 6:
 		{
