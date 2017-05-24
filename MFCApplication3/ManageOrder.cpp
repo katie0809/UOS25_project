@@ -390,7 +390,7 @@ void CManageOrder::OnEndlabeleditReorderList(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	NMLVDISPINFO *pDispInfo = reinterpret_cast<NMLVDISPINFO*>( pNMHDR );
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-
+	/*
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>( pNMHDR );
 	CString orderAmt, modifiedAmt; // 상품의 재고, 수정된 수량
 	int SelectedIdx, _orderAmt, _modifiedAmt;
@@ -404,7 +404,7 @@ void CManageOrder::OnEndlabeleditReorderList(NMHDR *pNMHDR, LRESULT *pResult)
 	// 원래 주문한 양보다 수정된 값이 크면 수정을 막는다
 	if( _orderAmt < _modifiedAmt )
 		*pResult = 0;
-	else *pResult = TRUE;
+	else */*pResult = TRUE;
 
 }
 
@@ -413,7 +413,7 @@ void CManageOrder::OnEndlabeleditReturnList(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	NMLVDISPINFO *pDispInfo = reinterpret_cast<NMLVDISPINFO*>( pNMHDR );
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-
+	/*
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>( pNMHDR );
 	CString orderAmt, modifiedAmt; // 상품의 재고, 수정된 수량
 	int SelectedIdx, _orderAmt, _modifiedAmt;
@@ -430,6 +430,6 @@ void CManageOrder::OnEndlabeleditReturnList(NMHDR *pNMHDR, LRESULT *pResult)
 	// 원래 주문한 양보다 수정된 값이 크면 수정을 막는다
 	if (_orderAmt < _modifiedAmt)
 		*pResult = 0;
-	else *pResult = TRUE;
+	else */*pResult = TRUE;
 }
 

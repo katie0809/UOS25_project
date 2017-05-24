@@ -121,11 +121,12 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			CString order_code, order_num, order_date, order_sum;
 			int idx = 0;
 
-			m_list->ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
-			m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
-
 			if (m_list->GetItemCount() > 0)
 				DeleteContent(m_list); // If there are any left contents on the pane, delete all
+
+
+			m_list->ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
+			m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
 			// Get the distinct order code and total sum of an amount of the products of the order
 			recSet.Open(CRecordset::dynaset, L"SELECT DISTINCT ORDER_CODE, SUM(ORDER_AMOUNT) FROM ORDER_LIST GROUP BY ORDER_CODE ORDER BY ORDER_CODE");
@@ -159,41 +160,48 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		}
 		case 2:
 		{
-			// RETURN
-		
-			// Set the style of Return list
+			// Show Return List
+
+			CString ret_code, ret_num, ret_date, ret_sum;
+			int idx = 0;
+
+
+			if (m_list->GetItemCount() > 0)
+				DeleteContent(m_list); // If there are any left contents on the pane, delete all
+
+
+			// Set the style of return list
 			m_list->ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
 			m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
-			// ?�면 ?�리??
-			if (m_list->GetItemCount() > 0)
-				DeleteContent(m_list);
+			// Get the distinct order code and total sum of an amount of the products of the order
+			recSet.Open(CRecordset::dynaset, L"SELECT DISTINCT RETURN_CODE, SUM(RETURN_AMOUNT) FROM RETURN GROUP BY RETURN_CODE ORDER BY RETURN_CODE");
 
-			int idx = 1;
-			recSet.Open(CRecordset::dynaset, L"select distinct order_date, order_id from order_list order by order_id");
-			// recSet.Open(CRecordset::dynaset, L"select distinct RETURN_CODE, RETURN_AMOUNT from RETURN order by RETURN_CODE");
+			m_list->InsertColumn(1, L"��ǰ ��ȣ", LVCFMT_CENTER, 150);
+			m_list->InsertColumn(2, L"��ǰ ��¥", LVCFMT_CENTER, 150);
+			m_list->InsertColumn(3, L"��ǰ ����", LVCFMT_CENTER, 150);
 
-
-			m_list->InsertColumn(idx, L"��ǰ ���", LVCFMT_CENTER, 400);
 
 			while (!recSet.IsEOF())
 			{
-				CString order_date = L" ", order_list;
-				recSet.GetFieldValue(_T("ORDER_DATE"), order_date);
-				AfxExtractSubString(order_date, order_date, 0, ' ');
-				order_list.Format(L"주문번호 %d | %s", idx + 1000, order_date);
+				recSet.GetFieldValue(_T("RETURN_CODE"), ret_code);
+				recSet.GetFieldValue(_T("SUM(RETURN_AMOUNT)"), ret_sum);
 
-				m_list->InsertItem(idx, order_list, 30);
-				m_list->SetItemText(idx, 0, order_list);
+				// Extract date and num from order code
+				ret_date = ret_code.Left(8);
+				ret_num = ret_code.Mid(10, 13);
+
+				// Insert itm into list
+				int nListitm = m_list->InsertItem(0, ret_num, 0);
+				m_list->SetItem(nListitm, 1, LVFIF_TEXT, ret_date, 0, 0, 0, NULL);
+				m_list->SetItem(nListitm, 2, LVFIF_TEXT, ret_sum, 0, 0, 0, NULL);
+
 				idx++;
 				recSet.MoveNext();
 			}
 
 			recSet.Close();
-			m_list->InsertItem(idx, L"+ ??반품 ?�기", 30);
-			m_list->SetItemText(idx, 0, L"+ ??반품 ?�기");
-			break;
-		
+
 			break;
 		}
 		case 3:
@@ -285,22 +293,11 @@ void CContentView::OnInitialUpdate()
 {
 	CListView::OnInitialUpdate();
 
-	// TODO: ?�기???�수?�된 코드�?추�? �??�는 기본 ?�래?��? ?�출?�니??
-	
-	//m_list = &GetListCtrl();
-	//m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES );
-	
-	// 컬럼??보이지 ?�도�??�는 ?��???
-	//m_list->ModifyStyle(0, LVS_NOCOLUMNHEADER);
 }
 
-/*
-	리스?��? ?�블?�릭??경우 ?�이지???�라 ?�요???�이?�로�??�운??
-*/
 void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>( pNMHDR );
-	// TODO: ?�기??컨트�??�림 처리�?코드�?추�??�니??
 
 	switch (CUR_CONTENT)
 	{
