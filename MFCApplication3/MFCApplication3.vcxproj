@@ -188,6 +188,7 @@
     <ClInclude Include="ContentView.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="ManageOrder.h" />
+    <ClInclude Include="ManageReturn.h" />
     <ClInclude Include="MenuView.h" />
     <ClInclude Include="MFCApplication3.h" />
     <ClInclude Include="MFCApplication3Doc.h" />
@@ -201,6 +202,7 @@
     <ClCompile Include="ContentView.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="ManageOrder.cpp" />
+    <ClCompile Include="ManageReturn.cpp" />
     <ClCompile Include="MenuView.cpp" />
     <ClCompile Include="MFCApplication3.cpp" />
     <ClCompile Include="MFCApplication3Doc.cpp" />

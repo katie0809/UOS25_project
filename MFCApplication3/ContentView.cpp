@@ -5,6 +5,7 @@
 #include "MFCApplication3.h"
 #include "ContentView.h"
 #include "ManageOrder.h"
+#include "ManageReturn.h"
 #include "NewOrder.h"
 // CContentView
 
@@ -177,6 +178,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			// Get the distinct order code and total sum of an amount of the products of the order
 			recSet.Open(CRecordset::dynaset, L"SELECT DISTINCT RETURN_CODE, SUM(RETURN_AMOUNT) FROM RETURN GROUP BY RETURN_CODE ORDER BY RETURN_CODE");
 
+			m_list->InsertColumn(0, L"¹ÝÇ° À¯Çü", LVCFMT_CENTER, 150);
 			m_list->InsertColumn(1, L"¹ÝÇ° ¹øÈ£", LVCFMT_CENTER, 150);
 			m_list->InsertColumn(2, L"¹ÝÇ° ³¯Â¥", LVCFMT_CENTER, 150);
 			m_list->InsertColumn(3, L"¹ÝÇ° ¼ö·®", LVCFMT_CENTER, 150);
@@ -192,9 +194,20 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				ret_num = ret_code.Mid(10, 13);
 
 				// Insert itm into list
-				int nListitm = m_list->InsertItem(0, ret_num, 0);
-				m_list->SetItem(nListitm, 1, LVFIF_TEXT, ret_date, 0, 0, 0, NULL);
-				m_list->SetItem(nListitm, 2, LVFIF_TEXT, ret_sum, 0, 0, 0, NULL);
+				int nListitm = 0;
+				if (ret_code.Right(1) == '0')
+				{
+					// ¹ÝÇ° À¯ÇüÀÌ ÁÖ¹® ¹ÝÇ°
+					nListitm = m_list->InsertItem(0, L"ÁÖ¹® ¹ÝÇ°", 0);
+				}
+				else {
+
+					// ¹ÝÇ° À¯ÇüÀÌ ÆÇ¸Å ¹ÝÇ°
+					nListitm = m_list->InsertItem(0, L"ÆÇ¸Å ¹ÝÇ°", 0);
+				}
+				m_list->SetItem(nListitm, 1, LVFIF_TEXT, ret_num, 0, 0, 0, NULL);
+				m_list->SetItem(nListitm, 2, LVFIF_TEXT, ret_date, 0, 0, 0, NULL);
+				m_list->SetItem(nListitm, 3, LVFIF_TEXT, ret_sum, 0, 0, 0, NULL);
 
 				idx++;
 				recSet.MoveNext();
@@ -320,6 +333,7 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 					dlg_new_order = new NewOrder();
 					dlg_new_order->Create(NewOrder::IDD);
 					dlg_new_order->ShowWindow(SW_SHOW);
+
 					break;
 				}
 			
@@ -337,8 +351,28 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 		}
 		case 2:
 		{
-			//ë°˜í’ˆ ê´€ë¦?? íƒ
+			// ¹ÝÇ°¸ñ·Ï
+			if (pNMItemActivate->iItem != -1)
+			{
+				// ¼±ÅÃµÈ ¾ÆÀÌÅÛÀÇ ÀÎµ¦½º ¹øÈ£¸¦ ¾ò´Â´Ù
+				NM_LISTVIEW * pNMListView = (NM_LISTVIEW*) pNMHDR;
+				int cur_idx = pNMListView->iItem;
 
+				CString ret_code, ret_num, ret_date;
+				ret_num = m_list->GetItemText(cur_idx, 1);
+				ret_date = m_list->GetItemText(cur_idx, 2);
+				ret_code.Format(L"%s01%s", ret_date, ret_num);
+
+				// Open dialog using currently selected index num
+				dlg_manage_return = new CManageReturn(this, ret_code);
+				dlg_manage_return->Create(CManageReturn::IDD);
+				dlg_manage_return->ShowWindow(SW_SHOW);
+
+			}
+			else
+			{
+
+			}
 			break;
 		}
 		case 3:

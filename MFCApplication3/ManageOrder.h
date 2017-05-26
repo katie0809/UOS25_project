@@ -32,8 +32,8 @@ public:
 	void ShowData(CDatabase & db_order);
 
 public:
-	CManageOrder(CWnd* pParent = NULL);
 	CManageOrder(CWnd * pParent, CString selected_itm);
+
 
 	// 표준 생성자입니다.
 	virtual ~CManageOrder();

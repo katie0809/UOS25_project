@@ -1,5 +1,6 @@
 #pragma once
 #include "ManageOrder.h"
+#include "ManageReturn.h"
 #include "NewOrder.h"
 // CContentView ë·°ì…?ˆë‹¤.
 
@@ -17,8 +18,9 @@ protected:
 public:
 	int CUR_CONTENT;
 	CListCtrl * m_list;
-	CManageOrder * dlg_manage_order; //	
-	NewOrder * dlg_new_order; // ??ì£¼ë¬¸ ì¶”ê? ?¤ì´?¼ë¡œê·?ì§€???¬ì¸??
+	CManageOrder * dlg_manage_order;
+	NewOrder * dlg_new_order; 
+	CManageReturn * dlg_manage_return;
 public:
 
 #ifdef _DEBUG
