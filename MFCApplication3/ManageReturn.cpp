@@ -76,7 +76,7 @@ BOOL CManageReturn::OnInitDialog()
 void CManageReturn::ShowData(CDatabase & db_ret)
 {
 	CRecordset recSet(&db_ret);
-	CString strSQL, strNAME, strPRICE, strREMAIN, strCODE, strMAKER, strRETAMT, mommyCode;
+	CString strSQL, strNAME, strPRICE, strREMAIN, strCODE, strMAKER, strRETAMT, strDETAIL, mommyCode;
 
 	// Modify list style
 	m_returnList.ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_EDITLABELS, 0);
@@ -116,9 +116,10 @@ void CManageReturn::ShowData(CDatabase & db_ret)
 		recSet.GetFieldValue(_T("PROD_PRICE"), strPRICE);
 		recSet.GetFieldValue(_T("RETURN_AMOUNT"), strRETAMT);
 		recSet.GetFieldValue(_T("PROD_STOCK_AMOUNT"), strREMAIN);
+		recSet.GetFieldValue(_T("DETAIL"), strDETAIL);
 
 		// insert data into list
-		int nListitm = m_returnList.InsertItem(0, L"", 0);
+		int nListitm = m_returnList.InsertItem(0, strDETAIL, 0);
 		m_returnList.SetItem(nListitm, 1, LVFIF_TEXT, strNAME, 0, 0, 0, NULL);
 		m_returnList.SetItem(nListitm, 2, LVFIF_TEXT, strMAKER, 0, 0, 0, NULL);
 		m_returnList.SetItem(nListitm, 3, LVFIF_TEXT, strPRICE, 0, 0, 0, NULL);
@@ -165,9 +166,12 @@ void CManageReturn::OnBnClickedSave()
 	for (int i = 0; i < nItm; i++)
 	{
 		CString SQL;
-		SQL.Format(L"UPDATE RETURN SET DETAIL = %s WHERE RETURN_CODE = '%s'", m_returnList.GetItemText(i, 0), ret_id);
+		SQL.Format(L"UPDATE RETURN SET DETAIL = '%s' WHERE RETURN_CODE = '%s'", m_returnList.GetItemText(i, 0), ret_id);
+		//MessageBox(SQL);
 		db_ret.ExecuteSQL(SQL);
 	}
+	MessageBox(L"반품 사유 저장 완료");
+	OnOK();
 }
 
 

@@ -296,6 +296,7 @@ void CManageOrder::OnBnClickedConfirm()
 
 	int tmp2;
 	tmp2 = _ttoi(dbRetcnt);
+	tmp2++;
 
 	confirmNum = m_orderList.GetItemCount();
 	reorderNum = m_reorderList.GetItemCount();
@@ -317,6 +318,7 @@ void CManageOrder::OnBnClickedConfirm()
 		
 		SQL.Format(L"UPDATE PRODUCT SET prod_stock_amount = %d WHERE prod_code = '%s'", stock, m_orderList.GetItemText(i, 0));
 		db_order.ExecuteSQL(SQL);
+
 	}
 
 	for (int i = 0; i < reorderNum; i++)
@@ -370,6 +372,17 @@ void CManageOrder::OnBnClickedConfirm()
 		_stock += _order;
 
 		SQL.Format(L"UPDATE PRODUCT SET prod_stock_amount = %d WHERE prod_code = '%s'", _stock, m_returnList.GetItemText(i, 1));
+		db_order.ExecuteSQL(SQL);
+	}
+	
+	if (reorderNum > 0)
+	{
+		SQL.Format(L"UPDATE ORDER_LIST SET REORDER = 'Y' WHERE ORDER_CODE = '%s'", order_id); // 재주문이 발생하는 원래 레코드의 REORDER에는 재주문 존재 여부가 들어감
+
+	}
+	else
+	{
+		SQL.Format(L"UPDATE ORDER_LIST SET REORDER = 'N' WHERE ORDER_CODE = '%s'", order_id); // 재주문이 발생하는 원래 레코드의 REORDER에는 재주문 존재 여부가 들어감
 		db_order.ExecuteSQL(SQL);
 	}
 

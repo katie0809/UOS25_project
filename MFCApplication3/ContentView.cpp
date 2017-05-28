@@ -223,8 +223,6 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			if (m_list->GetItemCount() > 0)
 				DeleteContent(m_list);
 
-			MessageBox(L"판매 관리 메뉴입니다");
-
 			break;
 		}
 		case 4:
@@ -406,7 +404,7 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 
 				if (reorder_val != L"")
 				{
-					// 재주문 코드가 들어가 있거나 확정되었지만 재주문 코드가 없어 N이 들어가 있는 경우
+					// 재주문이 일어난 원래 주문의 코드가 들어가 있거나 확정된 엄마 레코드로서 Y or N이 들어가 있는 경우
 					// Open dialog for confirmed order
 					dlg_confirmed_order = new COrderConfirm(this, order_code);
 					dlg_confirmed_order->Create(COrderConfirm::IDD);

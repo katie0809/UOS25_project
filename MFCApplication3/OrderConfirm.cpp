@@ -124,13 +124,20 @@ void COrderConfirm::ShowData(CDatabase & db_order)
 
 	recSet.Close();
 
+	//strREORDER = L"";
+	//strRETURN = L"";
+
 	// 재주문 코드를 보여준다
 	reorderCode.AddString(strREORDER);
 
 	// 반품 코드를 보여준다
 	strSQL.Format(L"select DISTINCT return_code from return where return_high_code = '%s'", order_id);
 	recSet.Open(CRecordset::dynaset, strSQL);
-	recSet.GetFieldValue(_T("RETURN_CODE"), strRETURN);
-	returnCode.AddString(strRETURN);
+
+	if (recSet.GetRecordCount() > 0)
+	{
+		recSet.GetFieldValue(_T("RETURN_CODE"), strRETURN);
+		returnCode.AddString(strRETURN);
+	}
 }
 
