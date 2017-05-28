@@ -6,7 +6,7 @@
 #include "MenuView.h"
 #include "ContentView.h"
 
-#define MENU_ITEM_COUNT 17
+#define MENU_ITEM_COUNT 10
 
 // CMenuView
 
@@ -47,28 +47,11 @@ void CMenuView::Dump(CDumpContext& dc) const
 
 // CMenuView 메시지 처리기입니다.
 
-void CMenuView::SaveMenuState(CDatabase & db_menu)
-{
-	CRecordset recSet(&db_menu);
-	recSet.Open(CRecordset::dynaset, L"select name, is_last from menu_list");
-	int idx = 0;
-
-	while (!recSet.IsEOF())
-	{
-		recSet.GetFieldValue(_T("NAME"), menu_board[idx][0]);
-		recSet.GetFieldValue(_T("IS_LAST"), menu_board[idx][1]);
-		recSet.MoveNext();
-	}
-
-	recSet.Close();
-}
-
 void CMenuView::SetMenu(CDatabase & db_menu)
 {
 
 
 	//트리를 만든다
-	CRecordset recSet(&db_menu);
 	HTREEITEM  htItem[MENU_ITEM_COUNT];
 	
 	htItem[0] = GetTreeCtrl().InsertItem(L"UOS25 편의점 관리 프로그램", 0, 0, TVI_ROOT);
@@ -80,10 +63,11 @@ void CMenuView::SetMenu(CDatabase & db_menu)
 	htItem[6] = GetTreeCtrl().InsertItem(L"현재 직원", 0, 0, htItem[5], TVI_LAST);
 	htItem[7] = GetTreeCtrl().InsertItem(L"직원 이력", 0, 0, htItem[5], TVI_LAST);
 	htItem[8] = GetTreeCtrl().InsertItem(L"물품 관리", 0, 0, htItem[0], TVI_LAST);
+	htItem[9] = GetTreeCtrl().InsertItem(L"회원 관리", 0, 0, htItem[0], TVI_LAST);
 
 	
 	//트리를 펼친다
-	for (int i = 0; i < 9; i++)
+	for (int i = 0; i < 10; i++)
 		GetTreeCtrl().Expand(htItem[i], TVE_EXPAND);
 	
 	return;
@@ -141,9 +125,10 @@ void CMenuView::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 
 	// 선택된 아이템의 이름을 얻는다
 	CString selectedItem_name = GetTreeCtrl().GetItemText(selectedItem);
-	CString menu_board[8][2] = {
+	CString menu_board[9][2] = {
 		L"주문 관리",L"1",  L"반품 관리", L"1",L"판매 관리" ,L"1",L"자금 관리",L"1",
-		L"직원 관리",L"0", L"현재 직원", L"1",L"직원 이력" ,L"1",L"물품 관리", L"1"
+		L"직원 관리",L"0", L"현재 직원", L"1",L"직원 이력" ,L"1",L"물품 관리", L"1",
+		L"회원 관리", L"1"
 	};
 	
 	if (selectedItem_name == L"UOS25 편의점 관리 프로그램")
@@ -152,7 +137,7 @@ void CMenuView::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 
 	CString is_last;
 
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < 9; i++)
 	{
 		if (selectedItem_name == menu_board[i][0] && menu_board[i][1] == '1')
 		{

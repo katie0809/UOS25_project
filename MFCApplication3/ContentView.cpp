@@ -164,7 +164,6 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			// Show Return List
 
 			CString ret_code, ret_num, ret_date, ret_sum;
-			int idx = 0;
 
 
 			if (m_list->GetItemCount() > 0)
@@ -209,7 +208,6 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				m_list->SetItem(nListitm, 2, LVFIF_TEXT, ret_date, 0, 0, 0, NULL);
 				m_list->SetItem(nListitm, 3, LVFIF_TEXT, ret_sum, 0, 0, 0, NULL);
 
-				idx++;
 				recSet.MoveNext();
 			}
 
@@ -261,6 +259,48 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			// ë¬¼í’ˆ ê´€ë¦?
 			if (m_list->GetItemCount() > 0)
 				DeleteContent(m_list);
+
+			break;
+		}
+		case 9:
+		{
+			// È¸¿ø °ü¸®
+			// Show member list
+
+			CString member_code, name, phone, mileage;
+
+			if (m_list->GetItemCount() > 0)
+				DeleteContent(m_list); // If there are any left contents on the pane, delete all
+
+
+			m_list->ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
+			m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+
+			// Get the distinct order code and total sum of an amount of the products of the order
+			recSet.Open(CRecordset::dynaset, L"SELECT MEMBER_CODE, NAME, PHONE, MILEAGE FROM MEMBER ORDER BY NAME");
+
+			m_list->InsertColumn(0, L"ÀÌ¸§", LVCFMT_CENTER, 150);
+			m_list->InsertColumn(1, L"È¸¿ø ÄÚµå", LVCFMT_CENTER, 150);
+			m_list->InsertColumn(2, L"ÀüÈ­ ¹øÈ£", LVCFMT_CENTER, 150);
+			m_list->InsertColumn(3, L"¸¶ÀÏ¸®Áö", LVCFMT_CENTER, 150);
+
+			while (!recSet.IsEOF())
+			{
+				recSet.GetFieldValue(_T("MEMBER_CODE"), member_code);
+				recSet.GetFieldValue(_T("NAME"), name);
+				recSet.GetFieldValue(_T("MILEAGE"), mileage);
+				recSet.GetFieldValue(_T("PHONE"), phone);
+
+				// Insert itm into list
+				int nListitm = m_list->InsertItem(0, name, 0);
+				m_list->SetItem(nListitm, 1, LVFIF_TEXT, member_code, 0, 0, 0, NULL);
+				m_list->SetItem(nListitm, 2, LVFIF_TEXT, phone, 0, 0, 0, NULL);
+				m_list->SetItem(nListitm, 3, LVFIF_TEXT, mileage, 0, 0, 0, NULL);
+
+				recSet.MoveNext();
+			}
+
+			recSet.Close();
 
 			break;
 		}
@@ -316,6 +356,28 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 	{
 		case 1:
 		{
+			// Open database
+			CDatabase db_content;
+			CRecordset recSet(&db_content);
+
+			TRY
+			{
+				db_content.OpenEx(_T("DSN=UOS25;UID=UOS25;PWD=0000"));
+			}
+				CATCH(CException, e)
+			{
+				TCHAR errMSG[255];
+
+				e->GetErrorMessage(errMSG, 255);
+				AfxMessageBox(errMSG, MB_ICONERROR);
+
+
+				if (db_content.IsOpen())
+					db_content.Close();
+
+			}
+			END_CATCH
+
 			if (pNMItemActivate->iItem != -1)
 			{
 				// ¼±ÅÃµÈ ¾ÆÀÌÅÛÀÇ ÀÎµ¦½º ¹øÈ£¸¦ ¾ò´Â´Ù
@@ -336,18 +398,38 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 
 					break;
 				}
-			
-				// Open dialog using currently selected index num
-				dlg_manage_order = new CManageOrder(this, order_code);
-				dlg_manage_order->Create(CManageOrder::IDD);
-				dlg_manage_order->ShowWindow(SW_SHOW);
 
+				CString SQL, reorder_val;
+				SQL.Format(L"select distinct reorder from order_list where order_code='%s'", order_code);
+				recSet.Open(CRecordset::dynaset, SQL);
+				recSet.GetFieldValue(_T("REORDER"), reorder_val);
+
+				if (reorder_val != L"")
+				{
+					// ÀçÁÖ¹® ÄÚµå°¡ µé¾î°¡ ÀÖ°Å³ª È®Á¤µÇ¾úÁö¸¸ ÀçÁÖ¹® ÄÚµå°¡ ¾ø¾î NÀÌ µé¾î°¡ ÀÖ´Â °æ¿ì
+					// Open dialog for confirmed order
+					dlg_confirmed_order = new COrderConfirm(this, order_code);
+					dlg_confirmed_order->Create(COrderConfirm::IDD);
+					dlg_confirmed_order->ShowWindow(SW_SHOW);
+
+					break;
+				}
+				else 
+				{
+					// Open dialog using currently selected index num
+					dlg_manage_order = new CManageOrder(this, order_code);
+					dlg_manage_order->Create(CManageOrder::IDD);
+					dlg_manage_order->ShowWindow(SW_SHOW);
+
+					break;
+				}				
 			}
 			else
 			{
 
 			}
 			break;
+			
 		}
 		case 2:
 		{

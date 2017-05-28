@@ -2,6 +2,7 @@
 #pragma once
 #include "afxwin.h"
 #include "afxcmn.h"
+#include "OrderConfirm.h"
 #include <vector>
 #include <string>
 using namespace std;

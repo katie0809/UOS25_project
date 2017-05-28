@@ -351,7 +351,7 @@ void CManageOrder::OnBnClickedConfirm()
 		// 반품 시
 		// 반품 테이블에 현재 주문에 대한 주문 반품 레코드를 새로 만든다
 
-		SQL.Format(L"INSERT INTO RETURN(RETURN_CODE, PROD_CODE, RETURN_CHECK_CODE, RETURN_AMOUNT) VALUES ('%s01%04d0', '%s', '%s', %s)", today, tmp2, m_returnList.GetItemText(i,1), order_id, m_returnList.GetItemText(i,0));
+		SQL.Format(L"INSERT INTO RETURN(RETURN_CODE, PROD_CODE, RETURN_HIGH_CODE, RETURN_AMOUNT) VALUES ('%s01%04d0', '%s', '%s', %s)", today, tmp2, m_returnList.GetItemText(i,1), order_id, m_returnList.GetItemText(i,0));
 		db_order.ExecuteSQL(SQL);
 
 		// 물품 테이블에 현재 상품에 대한 재고 수량을 주문수량 - 반품 수량만큼 더해서 업데이트

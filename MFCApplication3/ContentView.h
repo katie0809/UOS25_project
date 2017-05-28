@@ -2,6 +2,7 @@
 #include "ManageOrder.h"
 #include "ManageReturn.h"
 #include "NewOrder.h"
+#include "OrderConfirm.h"
 // CContentView 뷰입?�다.
 
 class CContentView : public CListView
@@ -21,6 +22,8 @@ public:
 	CManageOrder * dlg_manage_order;
 	NewOrder * dlg_new_order; 
 	CManageReturn * dlg_manage_return;
+	COrderConfirm * dlg_confirmed_order;
+
 public:
 
 #ifdef _DEBUG

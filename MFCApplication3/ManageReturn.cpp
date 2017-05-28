@@ -84,7 +84,7 @@ void CManageReturn::ShowData(CDatabase & db_ret)
 
 	// 쿼리문을 통해 특정 날짜의 반품목록만 받아온다
 	// Get product code, product name, product maker, product price, order amount, product stock amount, event detail
-	strSQL.Format(L"SELECT PRODUCT.PROD_CODE, PROD_NAME, PROD_MAKER, PROD_PRICE, PROD_STOCK_AMOUNT, RETURN_AMOUNT, RETURN_CHECK_CODE, DETAIL FROM product INNER JOIN RETURN ON RETURN.RETURN_CODE = '%s' AND RETURN.PROD_CODE = PRODUCT.PROD_CODE;", ret_id);
+	strSQL.Format(L"SELECT PRODUCT.PROD_CODE, PROD_NAME, PROD_MAKER, PROD_PRICE, PROD_STOCK_AMOUNT, RETURN_AMOUNT, RETURN_HIGH_CODE, DETAIL FROM product INNER JOIN RETURN ON RETURN.RETURN_CODE = '%s' AND RETURN.PROD_CODE = PRODUCT.PROD_CODE;", ret_id);
 	recSet.Open(CRecordset::dynaset, strSQL);
 
 	// Create Column
@@ -95,7 +95,7 @@ void CManageReturn::ShowData(CDatabase & db_ret)
 	m_returnList.InsertColumn(4, L"반품 수량", LVCFMT_CENTER, 80);
 	m_returnList.InsertColumn(5, L"재고 수량", LVCFMT_CENTER, 80);
 
-	recSet.GetFieldValue(_T("RETURN_CHECK_CODE"), mommyCode);
+	recSet.GetFieldValue(_T("RETURN_HIGH_CODE"), mommyCode);
 	m_mommyCode.AddString(mommyCode);
 
 	if (ret_type == '0')
