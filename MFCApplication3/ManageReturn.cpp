@@ -143,8 +143,8 @@ void CManageReturn::OnLbnSelchangeList1()
 	{
 		// 주문 반품의 경우 원래 주문 내역 다이얼로그를 연다
 		// Open dialog using currently selected index num
-		dlg_manage_order = new CManageOrder(this, code);
-		dlg_manage_order->Create(CManageOrder::IDD);
+		dlg_manage_order = new COrderConfirm(this, code);
+		dlg_manage_order->Create(COrderConfirm::IDD);
 		dlg_manage_order->ShowWindow(SW_SHOW);
 	}
 	else

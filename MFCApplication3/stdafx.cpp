@@ -6,3 +6,4 @@
 #include "stdafx.h"
 
 
+int SYSTEM_USER;

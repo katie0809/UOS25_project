@@ -20,7 +20,7 @@ public:
 	CString ret_id;
 	CString ret_type;
 	CDatabase db_ret;
-	CManageOrder * dlg_manage_order;
+	COrderConfirm * dlg_manage_order;
 // 대화 상자 데이터입니다.
 // #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_RETURN };

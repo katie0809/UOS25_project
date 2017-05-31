@@ -18,6 +18,8 @@ protected:
 */
 public:
 	int CUR_CONTENT;
+	CString CUR_CODE;
+
 	CListCtrl * m_list;
 	CManageOrder * dlg_manage_order;
 	NewOrder * dlg_new_order; 
@@ -41,6 +43,10 @@ protected:
 public:
 	virtual void OnInitialUpdate();
 	afx_msg void OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
+	afx_msg void OnCancelOrder();
+	afx_msg void OnCancelReturn();
+	afx_msg void OnNMClick(NMHDR *pNMHDR, LRESULT *pResult);
 };
 
 

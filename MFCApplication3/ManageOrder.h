@@ -59,4 +59,5 @@ public:
 	CListCtrl m_orderList;
 	afx_msg void OnEndlabeleditReorderList(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnEndlabeleditReturnList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
 };

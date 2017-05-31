@@ -44,6 +44,7 @@ BEGIN_MESSAGE_MAP(CManageOrder, CDialogEx)
 	ON_NOTIFY(LVN_ENDLABELEDIT, IDC_REORDER_LIST, &CManageOrder::OnEndlabeleditReorderList)
 	ON_NOTIFY(LVN_ENDLABELEDIT, IDC_RETURN_LIST, &CManageOrder::OnEndlabeleditReturnList)
 //	ON_NOTIFY(LVN_DELETEITEM, IDC_ORDER_LIST, &CManageOrder::OnDeleteitemOrderList)
+ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()
 
 
@@ -324,8 +325,8 @@ void CManageOrder::OnBnClickedConfirm()
 	for (int i = 0; i < reorderNum; i++)
 	{
 		// 재주문 시
-		// 주문 테이블에 현재 주문을 재주문 코드로 넣어 새 주문을 만든다
-		SQL.Format(L"INSERT INTO ORDER_LIST(ORDER_CODE, PROD_CODE, ORDER_AMOUNT, ORDER_DATE, REORDER) VALUES ('%s01%05d', '%s', '%s', '%s', '%s')", today, tmp, m_reorderList.GetItemText(i,1), m_reorderList.GetItemText(i,0), today, order_id);
+		// 주문 테이블에 새 주문을 만든다
+		SQL.Format(L"INSERT INTO ORDER_LIST(ORDER_CODE, PROD_CODE, ORDER_AMOUNT, ORDER_DATE) VALUES ('%s01%05d', '%s', '%s', '%s')", today, tmp, m_reorderList.GetItemText(i,1), m_reorderList.GetItemText(i,0), today);
 		//MessageBox(L"SQL");
 		db_order.ExecuteSQL(SQL);
 
@@ -377,12 +378,12 @@ void CManageOrder::OnBnClickedConfirm()
 	
 	if (reorderNum > 0)
 	{
-		SQL.Format(L"UPDATE ORDER_LIST SET REORDER = 'Y' WHERE ORDER_CODE = '%s'", order_id); // 재주문이 발생하는 원래 레코드의 REORDER에는 재주문 존재 여부가 들어감
-
+		SQL.Format(L"UPDATE ORDER_LIST SET REORDER = '%s01%05d' WHERE ORDER_CODE = '%s'", today, tmp, order_id); // 재주문이 발생하는 원래 레코드의 REORDER에는 재주문으로 만들어지는 새 자식 주문 레코드가 들어감
+		db_order.ExecuteSQL(SQL);
 	}
 	else
 	{
-		SQL.Format(L"UPDATE ORDER_LIST SET REORDER = 'N' WHERE ORDER_CODE = '%s'", order_id); // 재주문이 발생하는 원래 레코드의 REORDER에는 재주문 존재 여부가 들어감
+		SQL.Format(L"UPDATE ORDER_LIST SET REORDER ='N' WHERE ORDER_CODE = '%s'", order_id); // 재주문이 발생하는 원래 레코드의 REORDER에는 재주문 존재 여부가 들어감
 		db_order.ExecuteSQL(SQL);
 	}
 
@@ -446,3 +447,9 @@ void CManageOrder::OnEndlabeleditReturnList(NMHDR *pNMHDR, LRESULT *pResult)
 	else */*pResult = TRUE;
 }
 
+
+
+void CManageOrder::OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+}

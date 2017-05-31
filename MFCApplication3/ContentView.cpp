@@ -23,6 +23,10 @@ CContentView::~CContentView()
 
 BEGIN_MESSAGE_MAP(CContentView, CListView)
 	ON_NOTIFY_REFLECT(NM_DBLCLK, &CContentView::OnNMDblclk)
+	ON_WM_CONTEXTMENU()
+	ON_COMMAND(ID_32771, &CContentView::OnCancelOrder)
+	ON_COMMAND(ID_32774, &CContentView::OnCancelReturn)
+	ON_NOTIFY_REFLECT(NM_CLICK, &CContentView::OnNMClick)
 END_MESSAGE_MAP()
 
 
@@ -156,7 +160,11 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			}
 
 			recSet.Close();
-			m_list->InsertItem(idx, L"+ »õ ÁÖ¹®ÇÏ±â", 0);
+			
+			// °ü¸®ÀÚ·Î Á¢¼ÓÇÑ °æ¿ì¿¡¸¸ »õ ÁÖ¹®À» Ãß°¡ÇÒ ¼ö ÀÖ´Ù.
+			if(SYSTEM_USER == USER_MANAGER)
+				m_list->InsertItem(idx, L"+ »õ ÁÖ¹®ÇÏ±â", 0);
+	
 			break;
 		}
 		case 2:
@@ -386,6 +394,7 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 				order_num = m_list->GetItemText(cur_idx, 0);
 				order_date = m_list->GetItemText(cur_idx, 1);
 				order_code.Format(L"%s01%s", order_date, order_num);
+				CUR_CODE = order_code;
 
 				if (order_num == "+ »õ ÁÖ¹®ÇÏ±â")
 				{
@@ -442,6 +451,7 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 				ret_num = m_list->GetItemText(cur_idx, 1);
 				ret_date = m_list->GetItemText(cur_idx, 2);
 				ret_code.Format(L"%s01%s", ret_date, ret_num);
+				CUR_CODE = ret_code;
 
 				// Open dialog using currently selected index num
 				dlg_manage_return = new CManageReturn(this, ret_code);
@@ -476,6 +486,177 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 		{
 			// ë¬¼í’ˆ ê´€ë¦?? íƒ
 		}
+	default:
+		break;
+	}
+
+	*pResult = 0;
+}
+
+
+void CContentView::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
+{
+	// TODO: ¿©±â¿¡ ¸Ş½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	CMenu menu;
+	menu.LoadMenuW(IDR_MENU1);
+
+	switch(CUR_CONTENT)
+	{
+	case 1:
+	{
+		CMenu * pmenu = menu.GetSubMenu(0);
+		pmenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, AfxGetMainWnd());
+		break;
+	}
+	case 2:
+	{
+		CMenu * pmenu = menu.GetSubMenu(1);
+		pmenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, AfxGetMainWnd());
+
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+
+void CContentView::OnCancelOrder()
+{
+	// TODO: ¿©±â¿¡ ¸í·É Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+
+	// Open database
+	CDatabase db_content;
+
+	TRY
+	{
+		db_content.OpenEx(_T("DSN=UOS25;UID=UOS25;PWD=0000"));
+	}
+		CATCH(CException, e)
+	{
+		TCHAR errMSG[255];
+
+		e->GetErrorMessage(errMSG, 255);
+		AfxMessageBox(errMSG, MB_ICONERROR);
+
+
+		if (db_content.IsOpen())
+			db_content.Close();
+
+	}
+	END_CATCH
+
+	CString SQL;
+	SQL.Format(L"DELETE FROM ORDER_LIST WHERE ORDER_CODE = '%s'", CUR_CODE);
+	//MessageBox(SQL);
+	db_content.ExecuteSQL(SQL);
+
+}
+
+
+void CContentView::OnCancelReturn()
+{
+	// Open database
+	CDatabase db_content;
+
+	TRY
+	{
+		db_content.OpenEx(_T("DSN=UOS25;UID=UOS25;PWD=0000"));
+	}
+		CATCH(CException, e)
+	{
+		TCHAR errMSG[255];
+
+		e->GetErrorMessage(errMSG, 255);
+		AfxMessageBox(errMSG, MB_ICONERROR);
+
+
+		if (db_content.IsOpen())
+			db_content.Close();
+
+	}
+	END_CATCH
+
+	CString SQL;
+	SQL.Format(L"UPDATE RETURN SET DETAIL = 'Ãë¼ÒµÈ ¹İÇ°' WHERE RETURN_CODE = '%s'", CUR_CODE);
+	db_content.ExecuteSQL(SQL);
+	// TODO: ¿©±â¿¡ ¸í·É Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+}
+
+
+void CContentView::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>( pNMHDR );
+	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+
+	switch (CUR_CONTENT)
+	{
+	case 1:
+	{
+			if (pNMItemActivate->iItem != -1)
+			{
+				// ¼±ÅÃµÈ ¾ÆÀÌÅÛÀÇ ÀÎµ¦½º ¹øÈ£¸¦ ¾ò´Â´Ù
+				NM_LISTVIEW * pNMListView = (NM_LISTVIEW*) pNMHDR;
+				int cur_idx = pNMListView->iItem;
+
+				CString order_code, order_num, order_date;
+				order_num = m_list->GetItemText(cur_idx, 0);
+				order_date = m_list->GetItemText(cur_idx, 1);
+				order_code.Format(L"%s01%s", order_date, order_num);
+				CUR_CODE = order_code;
+
+			}
+			else
+			{
+
+			}
+		break;
+
+	}
+	case 2:
+	{
+		// ¹İÇ°¸ñ·Ï
+		if (pNMItemActivate->iItem != -1)
+		{
+			// ¼±ÅÃµÈ ¾ÆÀÌÅÛÀÇ ÀÎµ¦½º ¹øÈ£¸¦ ¾ò´Â´Ù
+			NM_LISTVIEW * pNMListView = (NM_LISTVIEW*) pNMHDR;
+			int cur_idx = pNMListView->iItem;
+
+			CString ret_code, ret_num, ret_date;
+			ret_num = m_list->GetItemText(cur_idx, 1);
+			ret_date = m_list->GetItemText(cur_idx, 2);
+			ret_code.Format(L"%s01%s", ret_date, ret_num);
+			CUR_CODE = ret_code;
+
+
+		}
+		else
+		{
+
+		}
+		break;
+	}
+	case 3:
+	{
+		// ?ë§¤ ê´€ë¦?? íƒ
+	}
+	case 4:
+	{
+		// ?ê¸ˆ ê´€ë¦?? íƒ
+
+	}
+	case 6:
+	{
+		// ì§ì› ê´€ë¦?? íƒ
+	}
+	case 7:
+	{
+		// ì§ì› ?´ë ¥ ? íƒ
+	}
+	case 8:
+	{
+		// ë¬¼í’ˆ ê´€ë¦?? íƒ
+	}
 	default:
 		break;
 	}

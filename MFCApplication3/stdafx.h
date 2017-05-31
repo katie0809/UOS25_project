@@ -28,6 +28,12 @@
 */
 #include <afxdb.h>
 
+/*
+	로그인 된 사용자 구분을 위한 변수
+*/
+extern int SYSTEM_USER;
+#define USER_MANAGER	0
+#define USER_EMPLOYEE	1
 
 
 #ifndef _AFX_NO_OLE_SUPPORT

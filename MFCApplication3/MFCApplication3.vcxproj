@@ -186,6 +186,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ContentView.h" />
+    <ClInclude Include="EventDetail.h" />
+    <ClInclude Include="InfoEmp.h" />
+    <ClInclude Include="InfoProd.h" />
+    <ClInclude Include="Login.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="ManageOrder.h" />
     <ClInclude Include="ManageReturn.h" />
@@ -193,7 +197,10 @@
     <ClInclude Include="MFCApplication3.h" />
     <ClInclude Include="MFCApplication3Doc.h" />
     <ClInclude Include="MFCApplication3View.h" />
+    <ClInclude Include="NewEmp.h" />
     <ClInclude Include="NewOrder.h" />
+    <ClInclude Include="NewProd.h" />
+    <ClInclude Include="NewWorkTime.h" />
     <ClInclude Include="OrderConfirm.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -201,6 +208,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ContentView.cpp" />
+    <ClCompile Include="EventDetail.cpp" />
+    <ClCompile Include="InfoEmp.cpp" />
+    <ClCompile Include="InfoProd.cpp" />
+    <ClCompile Include="Login.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="ManageOrder.cpp" />
     <ClCompile Include="ManageReturn.cpp" />
@@ -208,7 +219,10 @@
     <ClCompile Include="MFCApplication3.cpp" />
     <ClCompile Include="MFCApplication3Doc.cpp" />
     <ClCompile Include="MFCApplication3View.cpp" />
+    <ClCompile Include="NewEmp.cpp" />
     <ClCompile Include="NewOrder.cpp" />
+    <ClCompile Include="NewProd.cpp" />
+    <ClCompile Include="NewWorkTime.cpp" />
     <ClCompile Include="OrderConfirm.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
