@@ -31,7 +31,7 @@ void COrderConfirm::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_ORDER_LIST, m_orderList);
 	//DDX_Control(pDX, IDC_EDIT2, reorder_code);
-	//DDX_Control(pDX, IDC_EDIT1, return_code);
+	//DDX_Control(pDX, IDC_EDIT1, return_num);
 	DDX_Control(pDX, IDC_LIST2, reorderCode);
 	DDX_Control(pDX, IDC_LIST1, returnCode);
 }
@@ -86,9 +86,9 @@ void COrderConfirm::ShowData(CDatabase & db_order)
 
 	// 쿼리문을 통해 특정 날짜의 주문목록만 받아온다
 	// Get product code, product name, product maker, product price, order amount, product stock amount, event detail
-	strSQL.Format(L"select product.prod_code, prod_name, prod_maker, prod_price, order_amount, prod_stock_amount, reorder from product inner join order_list on order_list.order_code = '%s' and order_list.prod_code = product.prod_code", order_id);
+	strSQL.Format(L"select product.prod_num, prod_name, prod_maker, prod_price, order_amount, prod_stock_amount, reorder_num from product inner join order_list on order_list.order_num = '%s' and order_list.prod_num = product.prod_num", order_id);
 	recSet.Open(CRecordset::dynaset, strSQL);
-	recSet.GetFieldValue(_T("REORDER"), strREORDER);
+	recSet.GetFieldValue(_T("REORDER_NUM"), strREORDER);
 
 	// Create Column
 	m_orderList.InsertColumn(0, L"상품 코드", LVCFMT_CENTER, 80);
@@ -103,7 +103,7 @@ void COrderConfirm::ShowData(CDatabase & db_order)
 	{
 		int idx = 0;
 
-		recSet.GetFieldValue(_T("PROD_CODE"), strCODE);
+		recSet.GetFieldValue(_T("PROD_NUM"), strCODE);
 		recSet.GetFieldValue(_T("PROD_NAME"), strNAME);
 		recSet.GetFieldValue(_T("PROD_MAKER"), strMAKER);
 		recSet.GetFieldValue(_T("PROD_PRICE"), strPRICE);
@@ -131,12 +131,12 @@ void COrderConfirm::ShowData(CDatabase & db_order)
 	reorderCode.AddString(strREORDER);
 
 	// 반품 코드를 보여준다
-	strSQL.Format(L"select DISTINCT return_code from return where return_high_code = '%s'", order_id);
+	strSQL.Format(L"select DISTINCT return_num from return where return_high_num = '%s'", order_id);
 	recSet.Open(CRecordset::dynaset, strSQL);
 
 	if (recSet.GetRecordCount() > 0)
 	{
-		recSet.GetFieldValue(_T("RETURN_CODE"), strRETURN);
+		recSet.GetFieldValue(_T("RETURN_NUM"), strRETURN);
 		returnCode.AddString(strRETURN);
 	}
 }

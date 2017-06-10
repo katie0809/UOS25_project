@@ -4,9 +4,7 @@
 #include "stdafx.h"
 #include "MFCApplication3.h"
 #include "ContentView.h"
-#include "ManageOrder.h"
-#include "ManageReturn.h"
-#include "NewOrder.h"
+
 // CContentView
 
 
@@ -117,9 +115,9 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 
 	
 
-	switch (lHint)
-	{
-		case 1:	
+		switch (lHint)
+		{
+		case 1:
 		{
 			// Show Order List
 
@@ -134,7 +132,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
 			// Get the distinct order code and total sum of an amount of the products of the order
-			recSet.Open(CRecordset::dynaset, L"SELECT DISTINCT ORDER_CODE, SUM(ORDER_AMOUNT) FROM ORDER_LIST GROUP BY ORDER_CODE ORDER BY ORDER_CODE");
+			recSet.Open(CRecordset::dynaset, L"SELECT DISTINCT ORDER_NUM, SUM(ORDER_AMOUNT) FROM ORDER_LIST GROUP BY order_num ORDER BY order_num");
 
 			m_list->InsertColumn(1, L"¡÷πÆ π¯»£", LVCFMT_CENTER, 150);
 			m_list->InsertColumn(2, L"¡÷πÆ ≥Ø¬•", LVCFMT_CENTER, 150);
@@ -143,9 +141,9 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 
 			while (!recSet.IsEOF())
 			{
-				recSet.GetFieldValue(_T("ORDER_CODE"), order_code);
+				recSet.GetFieldValue(_T("ORDER_NUM"), order_code);
 				recSet.GetFieldValue(_T("SUM(ORDER_AMOUNT)"), order_sum);
-				
+
 				// Extract date and num from order code
 				order_date = order_code.Left(8);
 				order_num = order_code.Right(5);
@@ -160,13 +158,14 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			}
 
 			recSet.Close();
-			
+
 			// ∞¸∏Æ¿⁄∑Œ ¡¢º”«— ∞ÊøÏø°∏∏ ªı ¡÷πÆ¿ª √ﬂ∞°«“ ºˆ ¿÷¥Ÿ.
-			if(SYSTEM_USER == USER_MANAGER)
+			if (SYSTEM_USER == USER_MANAGER)
 				m_list->InsertItem(idx, L"+ ªı ¡÷πÆ«œ±‚", 0);
-	
+
 			break;
 		}
+		
 		case 2:
 		{
 			// Show Return List
@@ -183,7 +182,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
 			// Get the distinct order code and total sum of an amount of the products of the order
-			recSet.Open(CRecordset::dynaset, L"SELECT DISTINCT RETURN_CODE, SUM(RETURN_AMOUNT) FROM RETURN GROUP BY RETURN_CODE ORDER BY RETURN_CODE");
+			recSet.Open(CRecordset::dynaset, L"SELECT DISTINCT return_num, SUM(RETURN_AMOUNT) FROM RETURN GROUP BY return_num ORDER BY return_num");
 
 			m_list->InsertColumn(0, L"π›«∞ ¿Ø«¸", LVCFMT_CENTER, 150);
 			m_list->InsertColumn(1, L"π›«∞ π¯»£", LVCFMT_CENTER, 150);
@@ -193,7 +192,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 
 			while (!recSet.IsEOF())
 			{
-				recSet.GetFieldValue(_T("RETURN_CODE"), ret_code);
+				recSet.GetFieldValue(_T("RETURN_NUM"), ret_code);
 				recSet.GetFieldValue(_T("SUM(RETURN_AMOUNT)"), ret_sum);
 
 				// Extract date and num from order code
@@ -207,10 +206,15 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 					// π›«∞ ¿Ø«¸¿Ã ¡÷πÆ π›«∞
 					nListitm = m_list->InsertItem(0, L"¡÷πÆ π›«∞", 0);
 				}
-				else {
+				else if(ret_code.Right(1) == '1') {
 
 					// π›«∞ ¿Ø«¸¿Ã ∆«∏≈ π›«∞
 					nListitm = m_list->InsertItem(0, L"∆«∏≈ π›«∞", 0);
+				}
+				else {
+
+					// π›«∞ ¿Ø«¸¿Ã √Îº“ π›«∞
+					nListitm = m_list->InsertItem(0, L"√Îº“ π›«∞", 0);
 				}
 				m_list->SetItem(nListitm, 1, LVFIF_TEXT, ret_num, 0, 0, 0, NULL);
 				m_list->SetItem(nListitm, 2, LVFIF_TEXT, ret_date, 0, 0, 0, NULL);
@@ -225,55 +229,301 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		}
 		case 3:
 		{
-			// ?êÎß§ Í¥ÄÎ¶?
+			// Sale Management
 
 
+			// Setting default of list controller
 			if (m_list->GetItemCount() > 0)
 				DeleteContent(m_list);
 
+			m_list->ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
+			m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+
+
+			// connect db instance to SALE TABLE
+			recSet.Open(CRecordset::dynaset,
+				L"select SALE_NUM, SUM(SALE_AMOUNT), SUM(SUM_PRICE) from SALE group by SALE_NUM order by SALE_NUM");
+
+
+			// Initializing List Controller
+			if (m_list->GetItemCount() > 0)
+				DeleteContent(m_list);
+
+
+			//List Controllerø°ø≠√ﬂ∞°«œ±‚
+			//InsertColumn( FieldNumber , _T(" FieldName "), Title_Position_option , Size? , -1)
+			m_list->InsertColumn(0, _T("∆«∏≈ π¯»£"), LVCFMT_CENTER, 250, -1);
+			m_list->InsertColumn(1, _T("√— ∆«∏≈ ∞≥ºˆ"), LVCFMT_CENTER, 250, -1);
+			m_list->InsertColumn(2, _T("∆«∏≈ ≥Ø¬•"), LVCFMT_CENTER, 250, -1);
+			m_list->InsertColumn(3, _T("√— ∆«∏≈ ±›æ◊"), LVCFMT_CENTER, 250, -1);
+
+
+
+			//recSetø°«ÿ¥Á≈◊¿Ã∫Ì≥ªøÎ¿Ã¥„∞‹¡Æ¿÷¿Ω, ∆˜¿Œ≈Õ∏¶≈Î«ÿ¥Ÿ¿Ω∑πƒ⁄µÂ(«‡¥‹¿ß)∑Œ¿Ãµø
+			//∏∂¡ˆ∏∑ø°µµ¥ﬁ«“∂ß±Ó¡ˆ∑πƒ⁄µÂ∏¶¿–¿∫»ƒ, ∞¢« µÂ∏∂¥Ÿi«‡jø≠∑Œ« µÂº¬∆√
+
+			int idx = 0;
+
+			while (!recSet.IsEOF()) {
+				CString sale_num, total_amount, total_price;
+				CString sale_date;
+
+				recSet.GetFieldValue(_T("SALE_NUM"), sale_num);
+				recSet.GetFieldValue(_T("SUM(SALE_AMOUNT)"), total_amount);
+				recSet.GetFieldValue(_T("SUM(SUM_PRICE)"), total_price);
+
+				sale_date = sale_num.Left(8);
+
+				int LinsertIdx = m_list->InsertItem(0, sale_num, 0);
+				m_list->SetItem(LinsertIdx, 0, LVIF_TEXT, sale_num, 0, 0, 0, NULL);
+				m_list->SetItem(LinsertIdx, 1, LVIF_TEXT, total_amount, 0, 0, 0, NULL);
+				m_list->SetItem(LinsertIdx, 2, LVIF_TEXT, sale_date, 0, 0, 0, NULL);
+				m_list->SetItem(LinsertIdx, 3, LVIF_TEXT, total_price, 0, 0, 0, NULL);
+
+				idx++;
+				recSet.MoveNext();
+			}
+
+			recSet.Close();
+			m_list->InsertItem(idx, L"+ ∆«∏≈ Ω««‡", 0);
+
+			//sales_view = new CSalesView();
+			//sales_view->Create(NULL, NULL, WS_CHILD, CRect(0,0,0,0), pSender, 200, this);
 			break;
 		}
 		case 4:
 		{
-			// ?êÍ∏à Í¥ÄÎ¶?
+			manageasset = new ManageAsset();
+			manageasset->Create(ManageAsset::IDD);
+			manageasset->ShowWindow(SW_SHOW);
 
-			if (m_list->GetItemCount() > 0)
-				DeleteContent(m_list);
 
 			break;
 		}
 		case 6:
 		{
-			// ?ÑÏû¨ ÏßÅÏõê
+			CString EMP_NUM, EMP_RANK, EMP_NAME;
+			int idx = 0;
+
+			// Set the style of Return list
+			m_list->ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
+			m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+
+			// ?îÎ©¥ ?¥Î¶¨??
 			if (m_list->GetItemCount() > 0)
 				DeleteContent(m_list);
 
+			recSet.Open(CRecordset::dynaset, L"select distinct EMP_NUM, RANK_SORT_CODE, NAME from EMPLOYEE WHERE RANK_SORT_CODE IN ('ªÁ¿Â', '∏≈¥œ¿˙', 'æﬂ∞£¡˜ø¯', '¡÷∞£¡˜ø¯') ORDER BY EMP_NUM DESC");
+
+			m_list->InsertColumn(0, L"«ˆ¿Á ¡˜ø¯ π¯»£", LVCFMT_CENTER, 200);
+			m_list->InsertColumn(1, L"¡˜±ﬁ", LVCFMT_CENTER, 200);
+			m_list->InsertColumn(2, L"¿Ã∏ß", LVCFMT_CENTER, 200);
+
+			while (!recSet.IsEOF())
+			{
+				recSet.GetFieldValue(_T("EMP_NUM"), EMP_NUM);
+				recSet.GetFieldValue(_T("RANK_SORT_CODE"), EMP_RANK);
+				recSet.GetFieldValue(_T("NAME"), EMP_NAME);
+
+
+				// Insert itm into list
+				int nListitm = m_list->InsertItem(0, EMP_NUM, 0);
+				m_list->SetItem(nListitm, 1, LVFIF_TEXT, EMP_RANK, 0, 0, 0, NULL);
+				m_list->SetItem(nListitm, 2, LVFIF_TEXT, EMP_NAME, 0, 0, 0, NULL);
+
+				idx++;
+				recSet.MoveNext();
+			}
+
+			recSet.Close();
+
+			if (SYSTEM_USER == USER_MANAGER)
+			{
+				m_list->InsertItem(idx, L"+ ªı ¡˜ø¯ √ﬂ∞°«œ±‚", 0);
+				idx++;
+				m_list->InsertItem(idx, L"+ ø˘±ﬁ ¡ˆ±ﬁ «œ±‚", 0);
+				idx++;
+			}
 			break;
 		}
 		case 7:
 		{
-			// ÏßÅÏõê ?¥Î†•
-			if (m_list->GetItemCount() > 0)
-				DeleteContent(m_list);
+			if (SYSTEM_USER == USER_MANAGER)
+			{
+				CString EMP_NUM, EMP_RANK, EMP_NAME;
+				int idx = 0;
 
-			// m_list->ModifyStyle(LVS_TYPEMASK, 0);
+				// Set the style of Return list
+				m_list->ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
+				m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
-			break;
+				// ?îÎ©¥ ?¥Î¶¨??
+				if (m_list->GetItemCount() > 0)
+					DeleteContent(m_list);
+
+				recSet.Open(CRecordset::dynaset, L"select distinct  EMP_NUM, RANK_SORT_CODE, NAME from EMPLOYEE ORDER BY EMP_NUM DESC");
+
+				m_list->InsertColumn(0, L"«ˆ¿Á ¡˜ø¯ π¯»£", LVCFMT_CENTER, 200);
+				m_list->InsertColumn(1, L"¡˜±ﬁ", LVCFMT_CENTER, 200);
+				m_list->InsertColumn(2, L"¿Ã∏ß", LVCFMT_CENTER, 200);
+
+				while (!recSet.IsEOF())
+				{
+					recSet.GetFieldValue(_T("EMP_NUM"), EMP_NUM);
+					recSet.GetFieldValue(_T("RANK_SORT_CODE"), EMP_RANK);
+					recSet.GetFieldValue(_T("NAME"), EMP_NAME);
+
+
+					// Insert itm into list
+					int nListitm = m_list->InsertItem(0, EMP_NUM, 0);
+					m_list->SetItem(nListitm, 1, LVFIF_TEXT, EMP_RANK, 0, 0, 0, NULL);
+					m_list->SetItem(nListitm, 2, LVFIF_TEXT, EMP_NAME, 0, 0, 0, NULL);
+
+					idx++;
+					recSet.MoveNext();
+				}
+
+				break;
+			}
+			else
+			{
+				CClientDC pDC(this);//?ÑÏû¨ ?§Ïù¥?ºÎ°úÍ∑∏Ïùò ?Ä?¥Ì?Î∞îÎ? ?úÏô∏???ÅÏó≠???ªÎäî??
+				CDC memDC;
+				CPen pen;
+				CBrush brush;
+				pen.CreatePen(PS_SOLID, 1, RGB(255, 255, 255));
+				brush.CreateSolidBrush(RGB(255, 255, 255));
+
+				CPen *p = pDC.SelectObject(&pen);
+				CBrush *b = pDC.SelectObject(&brush);
+
+				pDC.Rectangle(0, 0, 1500, 800);
+				pDC.SelectObject(p);
+				pDC.SelectObject(b);
+
+				memDC.CreateCompatibleDC(&pDC);//CDC?Ä CClinetDCÎ•??∞Í≤∞?¥Ï£º??Íµ¨Î¨∏
+
+				CBitmap m_bitMain;
+				m_bitMain.LoadBitmapW(IDB_LOGO);
+				CBitmap *oldbm = memDC.SelectObject(&m_bitMain);
+				//	pDC.StretchBlt(17, 23, 300, 300, &memDC, 0, 0, 350, 350, SRCCOPY);
+				pDC.BitBlt(150, 100, 888, 396, &memDC, 0, 0, SRCCOPY);
+				//bitblt?®ÏàòÎ•??¨Ïö©?òÏó¨ ?§Ï†ú bmpÍ∑∏Î¶º?åÏùº???îÎ©¥??Ï∂úÎ†•?úÎã§.
+				//Ï¢åÌëú 10,10?ÑÏπò??300*300???¨Í∏∞Î°?Í∑∏Î¶º??Í∑∏Î¶∞??
+				//?êÎ≥∏Í∑∏Î¶º???ºÏ™Ω ???¨Ïù∏?∏Î? 0,0?ºÎ°ú ?§Ï†ï?úÎã§.
+				//bmp?åÏùº???¨Ïö©?òÎ?Î°?Î™®Îì† Ï∂úÎ†•?Ä ?ΩÏ???Í∏∞Ï??ºÎ°ú ?úÎã§.
+
+				break;
+			}
+			
 		}
 		case 8:
 		{
-			// Î¨ºÌíà Í¥ÄÎ¶?
+			CString PROD_NUM, PROD_NAME, PROD_MAKER, PROD_STOCK_AMOUNT, EVENT_NUM;
+			int idx = 0;
+
+			// Set the style of Return list
+			m_list->ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
+			m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+
+			// ?îÎ©¥ ?¥Î¶¨??
 			if (m_list->GetItemCount() > 0)
 				DeleteContent(m_list);
 
+			recSet.Open(CRecordset::dynaset, L"SELECT PROD_NUM, PROD_NAME, PROD_MAKER, EVENT_NUM, PROD_STOCK_AMOUNT FROM PRODUCT ORDER BY PROD_NUM");
+
+			m_list->InsertColumn(0, L"ªÛ«∞ ƒ⁄µÂ", LVCFMT_CENTER, 200);
+			m_list->InsertColumn(1, L"ªÛ«∞ ¿Ã∏ß", LVCFMT_CENTER, 150);
+			m_list->InsertColumn(2, L"¡¶¡∂ªÁ", LVCFMT_CENTER, 100);
+			m_list->InsertColumn(3, L"¿Á∞Ì", LVCFMT_CENTER, 100);
+			m_list->InsertColumn(4, L"¿Ã∫•∆Æ ø©∫Œ", LVCFMT_CENTER, 100);
+
+			while (!recSet.IsEOF())
+			{
+				recSet.GetFieldValue(_T("PROD_NUM"), PROD_NUM);
+				recSet.GetFieldValue(_T("PROD_NAME"), PROD_NAME);
+				recSet.GetFieldValue(_T("PROD_MAKER"), PROD_MAKER);
+				recSet.GetFieldValue(_T("EVENT_NUM"), EVENT_NUM);
+				recSet.GetFieldValue(_T("PROD_STOCK_AMOUNT"), PROD_STOCK_AMOUNT);
+
+
+				// Insert itm into list
+				int nListitm = m_list->InsertItem(0, PROD_NUM, 0);
+				m_list->SetItem(nListitm, 1, LVFIF_TEXT, PROD_NAME, 0, 0, 0, NULL);
+				m_list->SetItem(nListitm, 2, LVFIF_TEXT, PROD_MAKER, 0, 0, 0, NULL);
+				m_list->SetItem(nListitm, 3, LVFIF_TEXT, PROD_STOCK_AMOUNT, 0, 0, 0, NULL);
+
+				if (EVENT_NUM.IsEmpty())
+					EVENT_NUM.Format(L"N");
+				m_list->SetItem(nListitm, 4, LVFIF_TEXT, EVENT_NUM, 0, 0, 0, NULL);
+
+				idx++;
+				recSet.MoveNext();
+			}
+
+			recSet.Close();
+
+			m_list->InsertItem(idx, L"+ ªı π∞«∞ √ﬂ∞°«œ±‚", 0);
+			idx++;
+
+			if (SYSTEM_USER == USER_MANAGER)
+			{
+				m_list->InsertItem(idx, L"+ ¿Ã∫•∆Æ ∏Ò∑œ ∞¸∏Æ", 0);
+				idx++;
+				m_list->InsertItem(idx, L"+ ±∏∫–ƒ⁄µÂ ∏Ò∑œ ∞¸∏Æ", 0);
+				idx++;
+			}
 			break;
 		}
 		case 9:
+		{
+			// ∆Û±‚ ∞¸∏Æ
+			CString date, prod_num, amount;
+			int idx = 0;
+
+			// Set the style of Return list
+			m_list->ModifyStyle(0, LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0);
+			m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+
+			// ?îÎ©¥ ?¥Î¶¨??
+			if (m_list->GetItemCount() > 0)
+				DeleteContent(m_list);
+
+			recSet.Open(CRecordset::dynaset, L"SELECT * FROM DISUSE ORDER BY DISUSE_DATE");
+
+			m_list->InsertColumn(0, L"∆Û±‚ ≥Ø¬•", LVCFMT_CENTER, 200);
+			m_list->InsertColumn(1, L"ªÛ«∞ π¯»£", LVCFMT_CENTER, 150);
+			m_list->InsertColumn(2, L"ºˆ∑Æ", LVCFMT_CENTER, 100);
+
+			while (!recSet.IsEOF())
+			{
+				recSet.GetFieldValue(_T("DISUSE_DATE"), date);
+				recSet.GetFieldValue(_T("PROD_NUM"), prod_num);
+				recSet.GetFieldValue(_T("DISUSE_AMOUNT"), amount);
+
+
+				// Insert itm into list
+				int nListitm = m_list->InsertItem(0, date, 0);
+				m_list->SetItem(nListitm, 1, LVFIF_TEXT, prod_num, 0, 0, 0, NULL);
+				m_list->SetItem(nListitm, 2, LVFIF_TEXT, amount, 0, 0, 0, NULL);
+
+				idx++;
+				recSet.MoveNext();
+			}
+
+			recSet.Close();
+			m_list->InsertItem(idx, L"+ ªı ∆Û±‚ √ﬂ∞°«œ±‚", 0);
+
+
+			break;
+		}
+		case 10:
 		{
 			// »∏ø¯ ∞¸∏Æ
 			// Show member list
 
 			CString member_code, name, phone, mileage;
+			int idx = 0;
 
 			if (m_list->GetItemCount() > 0)
 				DeleteContent(m_list); // If there are any left contents on the pane, delete all
@@ -283,7 +533,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			m_list->SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
 			// Get the distinct order code and total sum of an amount of the products of the order
-			recSet.Open(CRecordset::dynaset, L"SELECT MEMBER_CODE, NAME, PHONE, MILEAGE FROM MEMBER ORDER BY NAME");
+			recSet.Open(CRecordset::dynaset, L"SELECT MEMBER_NUM, NAME, PHONE, MILEAGE FROM MEMBER ORDER BY NAME");
 
 			m_list->InsertColumn(0, L"¿Ã∏ß", LVCFMT_CENTER, 150);
 			m_list->InsertColumn(1, L"»∏ø¯ ƒ⁄µÂ", LVCFMT_CENTER, 150);
@@ -292,7 +542,7 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 
 			while (!recSet.IsEOF())
 			{
-				recSet.GetFieldValue(_T("MEMBER_CODE"), member_code);
+				recSet.GetFieldValue(_T("MEMBER_NUM"), member_code);
 				recSet.GetFieldValue(_T("NAME"), name);
 				recSet.GetFieldValue(_T("MILEAGE"), mileage);
 				recSet.GetFieldValue(_T("PHONE"), phone);
@@ -304,9 +554,11 @@ void CContentView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				m_list->SetItem(nListitm, 3, LVFIF_TEXT, mileage, 0, 0, 0, NULL);
 
 				recSet.MoveNext();
+				idx++;
 			}
 
 			recSet.Close();
+			m_list->InsertItem(idx, L"+ ªı »∏ø¯√ﬂ∞°", 0);
 
 			break;
 		}
@@ -407,9 +659,9 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 				}
 
 				CString SQL, reorder_val;
-				SQL.Format(L"select distinct reorder from order_list where order_code='%s'", order_code);
+				SQL.Format(L"select distinct reorder_num from order_list where order_num='%s'", order_code);
 				recSet.Open(CRecordset::dynaset, SQL);
-				recSet.GetFieldValue(_T("REORDER"), reorder_val);
+				recSet.GetFieldValue(_T("REORDER_NUM"), reorder_val);
 
 				if (reorder_val != L"")
 				{
@@ -467,27 +719,247 @@ void CContentView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 		}
 		case 3:
 		{
-			// ?êÎß§ Í¥ÄÎ¶??†ÌÉù
+			//∆«∏≈«œ±‚ πˆ∆∞¿ª ¥≠∑∂¿ª ∂ßøÕ ∆«∏≈ƒ⁄µÂ «‡¿ª ¥ı∫Ì≈¨∏Ø«ﬂ¿ª ∂ß ¥Ÿ∏£∞‘ ±∏º∫
+			if (pNMItemActivate->iItem != -1)
+			{
+				// º±≈√µ» æ∆¿Ã≈€¿« ¿Œµ¶Ω∫ π¯»£∏¶ æÚ¥¬¥Ÿ
+				NM_LISTVIEW * pNMListView = (NM_LISTVIEW*) pNMHDR;
+				int cur_idx = pNMListView->iItem;
+
+				CString sale_num, total_amount, total_price;
+				CString sale_date;
+
+				sale_num = m_list->GetItemText(cur_idx, 0);
+				total_amount = m_list->GetItemText(cur_idx, 1);
+				sale_date = m_list->GetItemText(cur_idx, 2);
+				total_price = m_list->GetItemText(cur_idx, 3);
+
+
+				if (sale_num == "+ ∆«∏≈ Ω««‡")
+				{
+					// Open dialog for new order
+					dlg_new_sale = new NewSale();
+					dlg_new_sale->Create(NewSale::IDD);
+					dlg_new_sale->ShowWindow(SW_SHOW);
+					break;
+				}
+
+				// Open dialog using currently selected index num
+				dlg_sale_detail = new SaleDetail(this, sale_num);
+				dlg_sale_detail->Create(SaleDetail::IDD);
+				dlg_sale_detail->ShowWindow(SW_SHOW);
+
+			}
+
+
+			break;
+
 		}
 		case 4:
 		{
-			// ?êÍ∏à Í¥ÄÎ¶??†ÌÉù
-
+			
 		}
 		case 6:
 		{
-			// ÏßÅÏõê Í¥ÄÎ¶??†ÌÉù
+			if (pNMItemActivate->iItem != -1)
+			{
+				// º±≈√µ» æ∆¿Ã≈€¿« ¿Œµ¶Ω∫ π¯»£∏¶ æÚ¥¬¥Ÿ
+				NM_LISTVIEW * pNMListView = (NM_LISTVIEW*) pNMHDR;
+				int cur_idx = pNMListView->iItem;
+
+				CString EMP_CODE, EMP_RANK, EMP_NAME;
+				EMP_CODE = m_list->GetItemText(cur_idx, 0);
+				EMP_RANK = m_list->GetItemText(cur_idx, 1);
+				EMP_NAME = m_list->GetItemText(cur_idx, 2);
+
+				if (EMP_CODE == "+ ªı ¡˜ø¯ √ﬂ∞°«œ±‚")
+				{
+					// Open dialog for new order
+					dlg_new_emp = new NewEmp();
+					dlg_new_emp->Create(NewEmp::IDD);
+					dlg_new_emp->ShowWindow(SW_SHOW);
+					break;
+				}
+				else if (EMP_CODE == "+ ø˘±ﬁ ¡ˆ±ﬁ «œ±‚")
+				{
+					// Open dialog for new order
+					dlg_emp_salary = new EmpSalary();
+					dlg_emp_salary->Create(EmpSalary::IDD);
+					dlg_emp_salary->ShowWindow(SW_SHOW);
+					break;
+				}
+
+				// Open dialog using currently selected index num
+				dlg_info_emp = new InfoEmp(this, EMP_CODE);
+				dlg_info_emp->Create(InfoEmp::IDD);
+				dlg_info_emp->ShowWindow(SW_SHOW);
+			}
+			else {}
+			break;
 		}
 		case 7:
 		{
-			// ÏßÅÏõê ?¥Î†• ?†ÌÉù
+
+			if (pNMItemActivate->iItem != -1)
+			{
+				if (SYSTEM_USER == USER_MANAGER)
+				{
+					// º±≈√µ» æ∆¿Ã≈€¿« ¿Œµ¶Ω∫ π¯»£∏¶ æÚ¥¬¥Ÿ
+					NM_LISTVIEW * pNMListView = (NM_LISTVIEW*) pNMHDR;
+					int cur_idx = pNMListView->iItem;
+
+					CString EMP_CODE, EMP_RANK, EMP_NAME;
+					EMP_CODE = m_list->GetItemText(cur_idx, 0);
+					EMP_RANK = m_list->GetItemText(cur_idx, 1);
+					EMP_NAME = m_list->GetItemText(cur_idx, 2);
+
+					// Open dialog using currently selected index num
+					dlg_info_emp = new InfoEmp(this, EMP_CODE);
+					dlg_info_emp->Create(InfoEmp::IDD);
+					dlg_info_emp->ShowWindow(SW_SHOW);
+				}
+				else
+				{
+					
+					break;
+				}
+			}
+			else {}
+			break;
 		}
 		case 8:
 		{
-			// Î¨ºÌíà Í¥ÄÎ¶??†ÌÉù
+			if (pNMItemActivate->iItem != -1)
+			{
+				// º±≈√µ» æ∆¿Ã≈€¿« ¿Œµ¶Ω∫ π¯»£∏¶ æÚ¥¬¥Ÿ
+				NM_LISTVIEW * pNMListView = (NM_LISTVIEW*) pNMHDR;
+				int cur_idx = pNMListView->iItem;
+
+				CString PROD_CODE, PROD_NAME, PROD_MAKER, PROD_STOCK_AMOUNT, PROD_EVENT_CODE;
+				PROD_CODE = m_list->GetItemText(cur_idx, 0);
+				PROD_NAME = m_list->GetItemText(cur_idx, 1);
+				PROD_MAKER = m_list->GetItemText(cur_idx, 2);
+				PROD_STOCK_AMOUNT = m_list->GetItemText(cur_idx, 3);
+				PROD_EVENT_CODE = m_list->GetItemText(cur_idx, 4);
+
+				if (PROD_CODE == "+ ªı π∞«∞ √ﬂ∞°«œ±‚")
+				{
+					dlg_new_prod = new NewProd();
+					dlg_new_prod->Create(NewProd::IDD);
+					dlg_new_prod->ShowWindow(SW_SHOW);
+					break;
+				}
+				else if (PROD_CODE == "+ ¿Ã∫•∆Æ ∏Ò∑œ ∞¸∏Æ")
+				{
+					dlg_event_detail = new EventDetail(this, PROD_CODE);
+					dlg_event_detail->Create(EventDetail::IDD);
+					dlg_event_detail->ShowWindow(SW_SHOW);
+					break;
+				}
+				else if (PROD_CODE == "+ ±∏∫–ƒ⁄µÂ ∏Ò∑œ ∞¸∏Æ")
+				{
+					dlg_code_list = new CodeList();
+					dlg_code_list->Create(CodeList::IDD);
+					dlg_code_list->ShowWindow(SW_SHOW);
+					break;
+				}
+
+				// Open dialog using currently selected index num
+				dlg_info_prod = new InfoProd(this, PROD_CODE);
+				dlg_info_prod->Create(InfoProd::IDD);
+				dlg_info_prod->ShowWindow(SW_SHOW);
+
+			}
+			else {}
+			break;
 		}
-	default:
-		break;
+		case 9:
+		{
+			if (pNMItemActivate->iItem != -1)
+			{
+				// º±≈√µ» æ∆¿Ã≈€¿« ¿Œµ¶Ω∫ π¯»£∏¶ æÚ¥¬¥Ÿ
+				NM_LISTVIEW * pNMListView = (NM_LISTVIEW*) pNMHDR;
+				int cur_idx = pNMListView->iItem;
+
+				CString date, prod_num;
+				date = m_list->GetItemText(cur_idx, 0);
+				prod_num = m_list->GetItemText(cur_idx, 1);
+
+				if (date == "+ ªı ∆Û±‚ √ﬂ∞°«œ±‚")
+				{
+					dlg_new_disuse = new NewDisuse();
+					dlg_new_disuse->Create(NewDisuse::IDD);
+					dlg_new_disuse->ShowWindow(SW_SHOW);
+					break;
+				}
+
+				// Open dialog using currently selected index num
+				dig_info_disuse = new InfoDisuse(this, date, prod_num);
+				dig_info_disuse->Create(InfoDisuse::IDD);
+				dig_info_disuse->ShowWindow(SW_SHOW);
+
+			}
+			else {}
+			break;
+		}
+		case 10:
+		{
+			if (pNMItemActivate->iItem != -1)
+			{
+				// º±≈√µ» æ∆¿Ã≈€¿« ¿Œµ¶Ω∫ π¯»£∏¶ æÚ¥¬¥Ÿ
+				NM_LISTVIEW * pNMListView = (NM_LISTVIEW*) pNMHDR;
+				int cur_idx = pNMListView->iItem;
+
+				CString CUSTOMER_CODE;
+				CUSTOMER_CODE = m_list->GetItemText(cur_idx, 0);
+				CString mem_cnt = m_list->GetItemText(cur_idx - 1, 1);
+				int _mem_cnt = _ttoi(mem_cnt);
+				_mem_cnt++;
+
+				if (CUSTOMER_CODE == L"+ ªı »∏ø¯√ﬂ∞°")
+				{
+					// Open dialog for new order
+					dlg_customer = new CNewCustomer(_mem_cnt, this);
+					dlg_customer->Create(CNewCustomer::IDD);
+					dlg_customer->ShowWindow(SW_SHOW);
+					break;
+				}
+			}
+			else {}
+			break;
+		}
+		default:
+		{
+			// UOS25 Î°úÍ≥†?îÎ©¥
+
+			CClientDC pDC(this);//?ÑÏû¨ ?§Ïù¥?ºÎ°úÍ∑∏Ïùò ?Ä?¥Ì?Î∞îÎ? ?úÏô∏???ÅÏó≠???ªÎäî??
+			CDC memDC;
+			CPen pen;
+			CBrush brush;
+			pen.CreatePen(PS_SOLID, 1, RGB(255, 255, 255));
+			brush.CreateSolidBrush(RGB(255, 255, 255));
+
+			CPen *p = pDC.SelectObject(&pen);
+			CBrush *b = pDC.SelectObject(&brush);
+
+			pDC.Rectangle(0, 0, 1500, 800);
+			pDC.SelectObject(p);
+			pDC.SelectObject(b);
+
+			memDC.CreateCompatibleDC(&pDC);//CDC?Ä CClinetDCÎ•??∞Í≤∞?¥Ï£º??Íµ¨Î¨∏
+
+			CBitmap m_bitMain;
+			m_bitMain.LoadBitmapW(IDB_LOGO);
+			CBitmap *oldbm = memDC.SelectObject(&m_bitMain);
+			//	pDC.StretchBlt(17, 23, 300, 300, &memDC, 0, 0, 350, 350, SRCCOPY);
+			pDC.BitBlt(150, 100, 888, 396, &memDC, 0, 0, SRCCOPY);
+			//bitblt?®ÏàòÎ•??¨Ïö©?òÏó¨ ?§Ï†ú bmpÍ∑∏Î¶º?åÏùº???îÎ©¥??Ï∂úÎ†•?úÎã§.
+			//Ï¢åÌëú 10,10?ÑÏπò??300*300???¨Í∏∞Î°?Í∑∏Î¶º??Í∑∏Î¶∞??
+			//?êÎ≥∏Í∑∏Î¶º???ºÏ™Ω ???¨Ïù∏?∏Î? 0,0?ºÎ°ú ?§Ï†ï?úÎã§.
+			//bmp?åÏùº???¨Ïö©?òÎ?Î°?Î™®Îì† Ï∂úÎ†•?Ä ?ΩÏ???Í∏∞Ï??ºÎ°ú ?úÎã§.
+
+			break;
+		}
 	}
 
 	*pResult = 0;
@@ -546,8 +1018,20 @@ void CContentView::OnCancelOrder()
 	}
 	END_CATCH
 
-	CString SQL;
-	SQL.Format(L"DELETE FROM ORDER_LIST WHERE ORDER_CODE = '%s'", CUR_CODE);
+	CString SQL, price;
+	SQL.Format(L"DELETE FROM ORDER_LIST WHERE order_num = '%s'", CUR_CODE);
+	db_content.ExecuteSQL(SQL);
+
+	CRecordset recSet(&db_content);
+	SQL.Format(L"SELECT PRICE FROM FUNDS WHERE FUNDS_DETAIL_NUM = '%s'AND FUNDS_SORT_CODE = 'F05'", CUR_CODE);
+	recSet.Open(CRecordset::dynaset, SQL);
+	recSet.GetFieldValue(_T("PRICE"), price);
+	
+	CTime cTime = CTime::GetCurrentTime();
+	CString funds_date, today;
+	funds_date.Format(L"%04d%02d%02d%02d%02d%02d", cTime.GetYear(), cTime.GetMonth(), cTime.GetDay(), cTime.GetHour(), cTime.GetMinute(), cTime.GetSecond());
+
+	SQL.Format(L"INSERT INTO FUNDS(FUNDS_DATE, FUNDS_DETAIL_NUM, PRICE, FUNDS_SORT_CODE) values ('%s', '%s', '-%s', 'F04')", funds_date, CUR_CODE, price);
 	//MessageBox(SQL);
 	db_content.ExecuteSQL(SQL);
 
@@ -577,8 +1061,11 @@ void CContentView::OnCancelReturn()
 	}
 	END_CATCH
 
-	CString SQL;
-	SQL.Format(L"UPDATE RETURN SET DETAIL = '√Îº“µ» π›«∞' WHERE RETURN_CODE = '%s'", CUR_CODE);
+	CString SQL, tmp, NEW_CODE;
+	tmp = CUR_CODE.Left(14);
+	NEW_CODE.Format(L"%s2", tmp);
+	SQL.Format(L"UPDATE RETURN SET DETAIL = '√Îº“µ» π›«∞', RETURN_NUM = '%s' WHERE return_num = '%s'", NEW_CODE, CUR_CODE);
+	//MessageBox(SQL);
 	db_content.ExecuteSQL(SQL);
 	// TODO: ø©±‚ø° ∏Ì∑… √≥∏Æ±‚ ƒ⁄µÂ∏¶ √ﬂ∞°«’¥œ¥Ÿ.
 }
@@ -636,27 +1123,7 @@ void CContentView::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 		}
 		break;
 	}
-	case 3:
-	{
-		// ?êÎß§ Í¥ÄÎ¶??†ÌÉù
-	}
-	case 4:
-	{
-		// ?êÍ∏à Í¥ÄÎ¶??†ÌÉù
 
-	}
-	case 6:
-	{
-		// ÏßÅÏõê Í¥ÄÎ¶??†ÌÉù
-	}
-	case 7:
-	{
-		// ÏßÅÏõê ?¥Î†• ?†ÌÉù
-	}
-	case 8:
-	{
-		// Î¨ºÌíà Í¥ÄÎ¶??†ÌÉù
-	}
 	default:
 		break;
 	}

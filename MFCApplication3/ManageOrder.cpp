@@ -127,7 +127,7 @@ void CManageOrder::ShowData(CDatabase & db_order)
 
 	// 쿼리문을 통해 특정 날짜의 주문목록만 받아온다
 	// Get product code, product name, product maker, product price, order amount, product stock amount, event detail
-	strSQL.Format(L"select product.prod_code, prod_name, prod_maker, prod_price, order_amount, prod_stock_amount from product inner join order_list on order_list.order_code = '%s' and order_list.prod_code = product.prod_code", order_id);
+	strSQL.Format(L"select product.prod_num, prod_name, prod_maker, prod_price, order_amount, prod_stock_amount from product inner join order_list on order_list.order_num = '%s' and order_list.prod_num = product.prod_num", order_id);
 	recSet.Open(CRecordset::dynaset, strSQL);
 
 	// Create Column
@@ -143,7 +143,7 @@ void CManageOrder::ShowData(CDatabase & db_order)
 	{
 		int idx = 0;
 		
-		recSet.GetFieldValue(_T("PROD_CODE"), strCODE);
+		recSet.GetFieldValue(_T("PROD_NUM"), strCODE);
 		recSet.GetFieldValue(_T("PROD_NAME"), strNAME);
 		recSet.GetFieldValue(_T("PROD_MAKER"), strMAKER);
 		recSet.GetFieldValue(_T("PROD_PRICE"), strPRICE);
@@ -277,7 +277,7 @@ void CManageOrder::OnBnClickedConfirm()
 	// 주문 목록 전체의 아이템에 대해 주문 확정
 
 	CString SQL, orderCode, prodCode, today, dbItmcnt, dbRetcnt;
-	int reorderNum, returnNum, confirmNum;
+	int reorderNum, returnNum, confirmNum, sum = 0;
 	CTime cTime = CTime::GetCurrentTime();
 
 	// Get current YYYYMMDD from system
@@ -286,9 +286,9 @@ void CManageOrder::OnBnClickedConfirm()
 	CRecordset recSet(&db_order);
 
 	// Get the number of orders from ORDER_ table
-	recSet.Open(CRecordset::dynaset, L"SELECT COUNT(DISTINCT ORDER_CODE), COUNT(DISTINCT RETURN_CODE) FROM ORDER_LIST, RETURN");
-	recSet.GetFieldValue(L"COUNT(DISTINCTORDER_CODE)", dbItmcnt);
-	recSet.GetFieldValue(L"COUNT(DISTINCTRETURN_CODE)", dbRetcnt);
+	recSet.Open(CRecordset::dynaset, L"SELECT COUNT(DISTINCT ORDER_NUM), COUNT(DISTINCT RETURN_NUM) FROM ORDER_LIST, RETURN");
+	recSet.GetFieldValue(L"COUNT(DISTINCTORDER_NUM)", dbItmcnt);
+	recSet.GetFieldValue(L"COUNT(DISTINCTRETURN_NUM)", dbRetcnt);
 
 	// Convert dbItmcnt to int data, and increase the value
 	int tmp = 0;
@@ -317,7 +317,7 @@ void CManageOrder::OnBnClickedConfirm()
 		
 		stock += orderamt; // 재고에 주문 수량을 더해준다
 		
-		SQL.Format(L"UPDATE PRODUCT SET prod_stock_amount = %d WHERE prod_code = '%s'", stock, m_orderList.GetItemText(i, 0));
+		SQL.Format(L"UPDATE PRODUCT SET prod_stock_amount = %d WHERE prod_num = '%s'", stock, m_orderList.GetItemText(i, 0));
 		db_order.ExecuteSQL(SQL);
 
 	}
@@ -326,7 +326,7 @@ void CManageOrder::OnBnClickedConfirm()
 	{
 		// 재주문 시
 		// 주문 테이블에 새 주문을 만든다
-		SQL.Format(L"INSERT INTO ORDER_LIST(ORDER_CODE, PROD_CODE, ORDER_AMOUNT, ORDER_DATE) VALUES ('%s01%05d', '%s', '%s', '%s')", today, tmp, m_reorderList.GetItemText(i,1), m_reorderList.GetItemText(i,0), today);
+		SQL.Format(L"INSERT INTO ORDER_LIST(order_num, prod_num, ORDER_AMOUNT, ORDER_DATE) VALUES ('%s01%05d', '%s', '%s', '%s')", today, tmp, m_reorderList.GetItemText(i,1), m_reorderList.GetItemText(i,0), today);
 		//MessageBox(L"SQL");
 		db_order.ExecuteSQL(SQL);
 
@@ -345,45 +345,60 @@ void CManageOrder::OnBnClickedConfirm()
 		_order -= _reorder;
 		_stock += _order;
 
-		SQL.Format(L"UPDATE PRODUCT SET prod_stock_amount = %d WHERE prod_code = '%s'", _stock, m_reorderList.GetItemText(i, 1));
+		SQL.Format(L"UPDATE PRODUCT SET prod_stock_amount = %d WHERE prod_num = '%s'", _stock, m_reorderList.GetItemText(i, 1));
 		db_order.ExecuteSQL(SQL);
 	}
+
+	sum = 0;
 
 	for (int i = 0; i < returnNum; i++)
 	{
 		// 반품 시
 		// 반품 테이블에 현재 주문에 대한 주문 반품 레코드를 새로 만든다
 
-		SQL.Format(L"INSERT INTO RETURN(RETURN_CODE, PROD_CODE, RETURN_HIGH_CODE, RETURN_AMOUNT) VALUES ('%s01%04d0', '%s', '%s', %s)", today, tmp2, m_returnList.GetItemText(i,1), order_id, m_returnList.GetItemText(i,0));
+		SQL.Format(L"INSERT INTO RETURN(return_num, prod_num, return_high_num, RETURN_AMOUNT) VALUES ('%s01%04d0', '%s', '%s', %s)", today, tmp2, m_returnList.GetItemText(i,1), order_id, m_returnList.GetItemText(i,0));
 		db_order.ExecuteSQL(SQL);
 
 		// 물품 테이블에 현재 상품에 대한 재고 수량을 주문수량 - 반품 수량만큼 더해서 업데이트
-		CString stockAmt, returnAmt, orderAmt; // 현재 재고, 재주문 수량, 주문 수량
-		int _stock, _return, _order;
+		CString stockAmt, returnAmt, orderAmt, price; // 현재 재고, 재주문 수량, 주문 수량
+		int _stock, _return, _order, _price;
 
 		stockAmt = m_returnList.GetItemText(i, 6); // 현재 재고 개수
 		returnAmt = m_returnList.GetItemText(i, 0); // 재주문을 원하는 개수
 		orderAmt = m_returnList.GetItemText(i, 5); // 원래 주문 개수
+	//	price = m_returnList.GetItemText(i, 4); 
 
 		_stock = _ttoi(stockAmt);
 		_return = _ttoi(returnAmt);
 		_order = _ttoi(orderAmt);
+	//	_price = _ttoi(price);
 
 		_order -= _return;
 		_stock += _order;
+		sum += ( _return * _price );
 
-		SQL.Format(L"UPDATE PRODUCT SET prod_stock_amount = %d WHERE prod_code = '%s'", _stock, m_returnList.GetItemText(i, 1));
+		SQL.Format(L"UPDATE PRODUCT SET prod_stock_amount = %d WHERE prod_num = '%s'", _stock, m_returnList.GetItemText(i, 1));
 		db_order.ExecuteSQL(SQL);
 	}
+	/*
+	반품 가격만큼 제하는 부분..
+
+	CString funds_date, sql_list;
+	funds_date.Format(L"%04d%02d%02d%02d%02d%02d", cTime.GetYear(), cTime.GetMonth(), cTime.GetDay(), cTime.GetHour(), cTime.GetMinute(), cTime.GetSecond());
+
+	sql_list.Format(L"INSERT INTO FUNDS(FUNDS_DATE, FUNDS_DETAIL_NUM, PRICE, FUNDS_SORT_CODE) values ('%s', '%s01%04d0', '%d', 'F05')", funds_date, today, tmp2, sum);
+	MessageBox(sql_list);
+	//db_neworder.ExecuteSQL(sql_list);
+	*/
 	
 	if (reorderNum > 0)
 	{
-		SQL.Format(L"UPDATE ORDER_LIST SET REORDER = '%s01%05d' WHERE ORDER_CODE = '%s'", today, tmp, order_id); // 재주문이 발생하는 원래 레코드의 REORDER에는 재주문으로 만들어지는 새 자식 주문 레코드가 들어감
+		SQL.Format(L"UPDATE ORDER_LIST SET reorder_num = '%s01%05d' WHERE order_num = '%s'", today, tmp, order_id); // 재주문이 발생하는 원래 레코드의 reorder_num에는 재주문으로 만들어지는 새 자식 주문 레코드가 들어감
 		db_order.ExecuteSQL(SQL);
 	}
 	else
 	{
-		SQL.Format(L"UPDATE ORDER_LIST SET REORDER ='N' WHERE ORDER_CODE = '%s'", order_id); // 재주문이 발생하는 원래 레코드의 REORDER에는 재주문 존재 여부가 들어감
+		SQL.Format(L"UPDATE ORDER_LIST SET reorder_num ='N' WHERE order_num = '%s'", order_id); // 재주문이 발생하는 원래 레코드의 reorder_num에는 재주문 존재 여부가 들어감
 		db_order.ExecuteSQL(SQL);
 	}
 

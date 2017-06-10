@@ -102,7 +102,7 @@ void NewOrder::ShowData(CDatabase & db_neworder)
 	{
 		int idx = 0;
 
-		recSet.GetFieldValue(_T("PROD_CODE"), strCODE);
+		recSet.GetFieldValue(_T("PROD_NUM"), strCODE);
 		recSet.GetFieldValue(_T("PROD_NAME"), strNAME);
 		recSet.GetFieldValue(_T("PROD_MAKER"), strMAKER);
 		recSet.GetFieldValue(_T("PROD_PRICE"), strPRICE);
@@ -131,18 +131,18 @@ void NewOrder::OnBnClickedOrder()
 	// 목록에 체크된 아이템을 받아 주문 개수 조정 다이얼로그로 보냅니다
 
 	CRecordset recSet(&db_neworder);
-	int idx = 0;
+	int idx = 0, sum = 0; // 총 주문금액
 	int nItmcnt = m_newOrder.GetItemCount();
 	CString sql_list, dbItmcnt; // 항목 삽입 위한 sql문 변수와 디비 주문 개수 얻어오기 위한 변수
 	CTime cTime = CTime::GetCurrentTime();
 	CString today;
-	
+
 	// Get current YYYYMMDD from system
 	today.Format(L"%04d%02d%02d", cTime.GetYear(), cTime.GetMonth(), cTime.GetDay());
 
 	// Get the number of orders from ORDER_ table
-	recSet.Open(CRecordset::dynaset, L"SELECT COUNT(DISTINCT ORDER_CODE) FROM ORDER_LIST");
-	recSet.GetFieldValue(L"COUNT(DISTINCTORDER_CODE)", dbItmcnt);
+	recSet.Open(CRecordset::dynaset, L"SELECT COUNT(DISTINCT ORDER_NUM) FROM ORDER_LIST");
+	recSet.GetFieldValue(L"COUNT(DISTINCTORDER_NUM)", dbItmcnt);
 	
 	// Convert dbItmcnt to int data, and increase the value
 	int tmp = 0;
@@ -157,14 +157,27 @@ void NewOrder::OnBnClickedOrder()
 		{
 			// If itm is checked, add data to database using SQLct
 			// 항목이 체크되었으면 SQL로 데이터베이스에 항목 추가
-			sql_list.Format(L"insert into order_list(order_code, prod_code, order_date, order_amount) values ('%s01%05d', '%s', '%s', %s)", today, tmp, m_newOrder.GetItemText(i,1), today, m_newOrder.GetItemText(i, 0));
+			sql_list.Format(L"insert into order_list(order_num, prod_num, order_date, order_amount) values ('%s01%05d', '%s', '%s', %s)", today, tmp, m_newOrder.GetItemText(i,1), today, m_newOrder.GetItemText(i, 0));
 			// MessageBox(sql_list);
 			db_neworder.ExecuteSQL(sql_list);
+
+			CString price = m_newOrder.GetItemText(i, 4);
+			CString orderCnt = m_newOrder.GetItemText(i, 0);
+			int _price = _ttoi(price);
+			int _orderCnt = _ttoi(orderCnt);
+
+			sum += ( _price * _orderCnt );
+
 			idx++;
 		}
 		else continue;
 	}
+	CString funds_date;
+	funds_date.Format(L"%04d%02d%02d%02d%02d%02d", cTime.GetYear(), cTime.GetMonth(), cTime.GetDay(), cTime.GetHour(), cTime.GetMinute(), cTime.GetSecond());
 
+	sql_list.Format(L"INSERT INTO FUNDS(FUNDS_DATE, FUNDS_DETAIL_NUM, PRICE, FUNDS_SORT_CODE) values ('%s', '%s01%05d', '-%d', 'F05')", funds_date, today, tmp, sum);
+	//MessageBox(sql_list);
+	db_neworder.ExecuteSQL(sql_list);
 	MessageBox(L"주문 완료");
 	OnBnClickedOk();
 }

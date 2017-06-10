@@ -14,7 +14,7 @@ IMPLEMENT_DYNAMIC(InfoEmp, CDialogEx)
 InfoEmp::InfoEmp(CWnd* pParent, CString selected_emp/*=NULL*/)
 	: CDialogEx(IDD_INFO_EMP, pParent)
 {
-	emp_code = selected_emp;
+	emp_num = selected_emp;
 }
 
 InfoEmp::~InfoEmp()
@@ -35,13 +35,13 @@ void InfoEmp::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(InfoEmp, CDialogEx)
+	ON_BN_CLICKED(IDOK, &InfoEmp::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_BUTTON1, &InfoEmp::OnBnClickedButton1)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &InfoEmp::OnNMDblclkList1)
 END_MESSAGE_MAP()
 
 
 // InfoEmp 메시지 처리기입니다.
-
 
 BOOL InfoEmp::OnInitDialog() {
 	CDialogEx::OnInitDialog();
@@ -81,12 +81,12 @@ void InfoEmp::ShowData(CDatabase & db_infoemp) {
 	CRecordset recSet(&db_infoemp);
 	CString sql, db_code, name, rank, age, sex, phone, bank, combo_rank, date, time;
 
-	sql.Format(L"SELECT * FROM EMPLOYEE WHERE EMP_CODE='%s'", emp_code);
+	sql.Format(L"SELECT * FROM EMPLOYEE WHERE EMP_NUM='%s'", emp_num);
 	recSet.Open(CRecordset::dynaset, sql);
 
 	if (!recSet.IsEOF())
 	{
-		recSet.GetFieldValue(_T("RANK"), rank);
+		recSet.GetFieldValue(_T("RANK_SORT_CODE"), rank);
 		recSet.GetFieldValue(_T("NAME"), name);
 		recSet.GetFieldValue(_T("AGE"), age);
 		recSet.GetFieldValue(_T("SEX"), sex);
@@ -116,7 +116,7 @@ void InfoEmp::ShowData(CDatabase & db_infoemp) {
 	else
 		m_infoemp_sex.SetCurSel(1);
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < m_infoemp_rank.GetCount(); i++) {
 		m_infoemp_rank.GetLBText(i, combo_rank);
 		if (combo_rank == rank) {
 			m_infoemp_rank.SetCurSel(i);
@@ -136,7 +136,7 @@ void InfoEmp::ShowData(CDatabase & db_infoemp) {
 	m_worktime_list.InsertColumn(0, L"날짜", LVCFMT_CENTER, 150);
 	m_worktime_list.InsertColumn(1, L"일한 시간", LVCFMT_CENTER, 150);
 
-	sql.Format(L"SELECT WORKTIME_DATE, WORKTIME FROM WORKHISTORY WHERE EMP_CODE='%s'", emp_code);
+	sql.Format(L"SELECT WORKTIME_DATE, WORKTIME FROM WORK_HISTORY WHERE EMP_NUM='%s'", emp_num);
 	recSet.Open(CRecordset::dynaset, sql);
 	while (!recSet.IsEOF())
 	{
@@ -176,7 +176,7 @@ void InfoEmp::OnBnClickedOk()
 
 	if (rank_out == "퇴사") {
 		CString sql;
-		sql.Format(L"DELETE FROM EMPLOYEE WHERE EMP_CODE='%s'", emp_code);
+		sql.Format(L"DELETE FROM EMPLOYEE WHERE EMP_NUM='%s'", emp_num);
 		db_infoemp.ExecuteSQL(sql);
 		MessageBox(L"직원 삭제 완료");
 		CDialogEx::OnOK();
@@ -188,7 +188,7 @@ void InfoEmp::OnBnClickedOk()
 		else
 			sex = 'F';
 
-		sql.Format(L"UPDATE EMPLOYEE SET RANK='%s', NAME='%s', AGE='%s', SEX='%s', PHONE='%s', BANK='%s' WHERE EMP_CODE='%s'", rank, name, age, sex, phone, bank, emp_code);
+		sql.Format(L"UPDATE EMPLOYEE SET RANK_SORT_CODE='%s', NAME='%s', AGE='%s', SEX='%s', PHONE='%s', BANK='%s' WHERE EMP_NUM='%s'", rank, name, age, sex, phone, bank, emp_num);
 		db_infoemp.ExecuteSQL(sql);
 		MessageBox(L"직원 수정 완료");
 		CDialogEx::OnOK();
@@ -201,7 +201,7 @@ void InfoEmp::OnBnClickedOk()
 void InfoEmp::OnBnClickedButton1()
 {
 	// 근무 이력 추가 버튼
-	dlg_new_work_time = new NewWorkTime(this, emp_code, NULL);
+	dlg_new_work_time = new NewWorkTime(this, emp_num, NULL);
 	dlg_new_work_time->Create(NewWorkTime::IDD);
 	dlg_new_work_time->ShowWindow(SW_SHOW);
 }
@@ -220,7 +220,7 @@ void InfoEmp::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 		WORKTIME_DATE = m_worktime_list.GetItemText(cur_idx, 0);
 
 		// Open dialog using currently selected index num
-		dlg_new_work_time = new NewWorkTime(this, emp_code, WORKTIME_DATE);
+		dlg_new_work_time = new NewWorkTime(this, emp_num, WORKTIME_DATE);
 		dlg_new_work_time->Create(NewWorkTime::IDD);
 		dlg_new_work_time->ShowWindow(SW_SHOW);
 	}

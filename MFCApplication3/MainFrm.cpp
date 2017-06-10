@@ -103,17 +103,19 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 {
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 
-	// Open dialog for user login
-	CLogin * dlg_login;
-
+	SYSTEM_USER = USER_EMPLOYEE;
+	
 	m_wndSplitter.CreateStatic(this, 1, 2);
 	m_wndSplitter.CreateView(0, 0, RUNTIME_CLASS(CMenuView), CSize(200, 0), pContext);
 	m_wndSplitter.CreateView(0, 1, RUNTIME_CLASS(CContentView), CSize(0, 0), pContext);
-
+	/*
+	// Open dialog for user login
+	CLogin * dlg_login;
+	
 	dlg_login = new CLogin();
 	dlg_login->Create(CLogin::IDD);
 	dlg_login->ShowWindow(SW_SHOW);
-
+	*/
 	return TRUE;
 
 }

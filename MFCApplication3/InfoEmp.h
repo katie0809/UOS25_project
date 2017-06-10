@@ -34,6 +34,6 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedButton1();
 	CListCtrl m_worktime_list;
-	CString rank_out, emp_code;
+	CString rank_out, emp_num;
 	afx_msg void OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
 };

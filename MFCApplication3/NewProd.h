@@ -22,7 +22,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-	virtual BOOL OnInitDialog();
+//	virtual BOOL OnInitDialog();
 	void ShowData();
 	CEdit m_newprod_name;
 	CEdit m_newprod_price;
@@ -32,4 +32,6 @@ public:
 	CEdit m_newprod_saleprice;
 	CEdit m_newprod_maker;
 	afx_msg void OnBnClickedButton1();
+	CEdit m_newprod_expiration;
+	virtual BOOL OnInitDialog();
 };

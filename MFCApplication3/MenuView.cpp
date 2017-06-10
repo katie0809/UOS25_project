@@ -5,8 +5,8 @@
 #include "MFCApplication3.h"
 #include "MenuView.h"
 #include "ContentView.h"
-
-#define MENU_ITEM_COUNT 10
+#include "Login.h"
+#define MENU_ITEM_COUNT 11
 
 // CMenuView
 
@@ -63,11 +63,12 @@ void CMenuView::SetMenu(CDatabase & db_menu)
 	htItem[6] = GetTreeCtrl().InsertItem(L"현재 직원", 0, 0, htItem[5], TVI_LAST);
 	htItem[7] = GetTreeCtrl().InsertItem(L"직원 이력", 0, 0, htItem[5], TVI_LAST);
 	htItem[8] = GetTreeCtrl().InsertItem(L"물품 관리", 0, 0, htItem[0], TVI_LAST);
-	htItem[9] = GetTreeCtrl().InsertItem(L"회원 관리", 0, 0, htItem[0], TVI_LAST);
-
+	htItem[9] = GetTreeCtrl().InsertItem(L"폐기 관리", 0, 0, htItem[8], TVI_LAST);
+	htItem[10] = GetTreeCtrl().InsertItem(L"회원 관리", 0, 0, htItem[0], TVI_LAST);
+	htItem[11] = GetTreeCtrl().InsertItem(L"로그인", 0, 0, htItem[0], TVI_LAST);
 	
 	//트리를 펼친다
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 11; i++)
 		GetTreeCtrl().Expand(htItem[i], TVE_EXPAND);
 	
 	return;
@@ -125,10 +126,10 @@ void CMenuView::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 
 	// 선택된 아이템의 이름을 얻는다
 	CString selectedItem_name = GetTreeCtrl().GetItemText(selectedItem);
-	CString menu_board[9][2] = {
+	CString menu_board[11][2] = {
 		L"주문 관리",L"1",  L"반품 관리", L"1",L"판매 관리" ,L"1",L"자금 관리",L"1",
 		L"직원 관리",L"0", L"현재 직원", L"1",L"직원 이력" ,L"1",L"물품 관리", L"1",
-		L"회원 관리", L"1"
+		L"폐기 관리", L"1", L"회원 관리", L"1", L"로그인", L"1"
 	};
 	
 	if (selectedItem_name == L"UOS25 편의점 관리 프로그램")
@@ -137,11 +138,23 @@ void CMenuView::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 
 	CString is_last;
 
-	for (int i = 0; i < 9; i++)
+	for (int i = 0; i < 10; i++)
 	{
+		if (selectedItem_name == menu_board[10][0])
+		{
+			// 로그인 창을 띄운다
+			// Open dialog for user login
+			CLogin * dlg_login;
+
+			dlg_login = new CLogin();
+			dlg_login->Create(CLogin::IDD);
+			dlg_login->ShowWindow(SW_SHOW);
+
+			break;
+		}
 		if (selectedItem_name == menu_board[i][0] && menu_board[i][1] == '1')
 		{
-			// 트리의 맨 마지막 계층 아이템을 선택한 경우에만 view를 업데이트한다
+			// 트리의 맨 마지막 계층 아이템을 선택한 경우에 해당 view만를 업데이트한다
 			GetDocument()->UpdateAllViews(this, i + 1, (CObject*) (LPCTSTR) selectedItem_name);
 
 			break;

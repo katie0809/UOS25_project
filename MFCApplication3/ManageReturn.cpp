@@ -84,7 +84,7 @@ void CManageReturn::ShowData(CDatabase & db_ret)
 
 	// 쿼리문을 통해 특정 날짜의 반품목록만 받아온다
 	// Get product code, product name, product maker, product price, order amount, product stock amount, event detail
-	strSQL.Format(L"SELECT PRODUCT.PROD_CODE, PROD_NAME, PROD_MAKER, PROD_PRICE, PROD_STOCK_AMOUNT, RETURN_AMOUNT, RETURN_HIGH_CODE, DETAIL FROM product INNER JOIN RETURN ON RETURN.RETURN_CODE = '%s' AND RETURN.PROD_CODE = PRODUCT.PROD_CODE;", ret_id);
+	strSQL.Format(L"SELECT PRODUCT.prod_num, PROD_NAME, PROD_MAKER, PROD_PRICE, PROD_STOCK_AMOUNT, RETURN_AMOUNT, return_high_num, DETAIL FROM product INNER JOIN RETURN ON RETURN.return_num = '%s' AND RETURN.prod_num = PRODUCT.prod_num;", ret_id);
 	recSet.Open(CRecordset::dynaset, strSQL);
 
 	// Create Column
@@ -95,22 +95,26 @@ void CManageReturn::ShowData(CDatabase & db_ret)
 	m_returnList.InsertColumn(4, L"반품 수량", LVCFMT_CENTER, 80);
 	m_returnList.InsertColumn(5, L"재고 수량", LVCFMT_CENTER, 80);
 
-	recSet.GetFieldValue(_T("RETURN_HIGH_CODE"), mommyCode);
+	recSet.GetFieldValue(_T("RETURN_HIGH_NUM"), mommyCode);
 	m_mommyCode.AddString(mommyCode);
 
 	if (ret_type == '0')
 	{
 		s_retType.SetWindowTextW(L"반품 타입 : 주문 반품");
 	}
-	else s_retType.SetWindowTextW(L"반품 타입 : 판매 반품");
-	
+	else if (ret_type == '1') {
+		s_retType.SetWindowTextW(L"반품 타입 : 판매 반품");
+	}
+	else {
+		s_retType.SetWindowTextW(L"반품 타입 : 취소됨");
+	}
 
 	// 받아온 테이블에 남은 데이터가 없을 때까지 실행
 	while (!recSet.IsEOF())
 	{
 		int idx = 0;
 
-		recSet.GetFieldValue(_T("PROD_CODE"), strCODE);
+		recSet.GetFieldValue(_T("PROD_NUM"), strCODE);
 		recSet.GetFieldValue(_T("PROD_NAME"), strNAME);
 		recSet.GetFieldValue(_T("PROD_MAKER"), strMAKER);
 		recSet.GetFieldValue(_T("PROD_PRICE"), strPRICE);
@@ -147,9 +151,13 @@ void CManageReturn::OnLbnSelchangeList1()
 		dlg_manage_order->Create(COrderConfirm::IDD);
 		dlg_manage_order->ShowWindow(SW_SHOW);
 	}
-	else
+	else if (ret_type =='1')
 	{
-
+		// 판매 반품인 경우
+	}
+	else 
+	{
+		// 취소 반품인 경우
 	}
 
 	return;
@@ -160,13 +168,18 @@ void CManageReturn::OnBnClickedSave()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	// 반품 사유 데이터베이스에 저장
+	
+	// 취소된 반품은 새로운 사유를 저장할 수 없다
+	if (ret_type == '2')
+		return;
+
 	int nItm = 0;
 	nItm = m_returnList.GetItemCount();
 
 	for (int i = 0; i < nItm; i++)
 	{
 		CString SQL;
-		SQL.Format(L"UPDATE RETURN SET DETAIL = '%s' WHERE RETURN_CODE = '%s'", m_returnList.GetItemText(i, 0), ret_id);
+		SQL.Format(L"UPDATE RETURN SET DETAIL = '%s' WHERE return_num = '%s'", m_returnList.GetItemText(i, 0), ret_id);
 		//MessageBox(SQL);
 		db_ret.ExecuteSQL(SQL);
 	}

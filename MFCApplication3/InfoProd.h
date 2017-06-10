@@ -11,7 +11,7 @@ class InfoProd : public CDialogEx
 	DECLARE_DYNAMIC(InfoProd)
 
 public:
-	InfoProd(CWnd* pParent = NULL, CString code = NULL);   // 표준 생성자입니다.
+	InfoProd(CWnd* pParent = NULL, CString num = NULL);   // 표준 생성자입니다.
 	virtual ~InfoProd();
 	CDatabase db_infoprod;
 	EventDetail * dlg_event_detail;
@@ -33,8 +33,9 @@ public:
 	CComboBox m_infoprod_sort;
 	CComboBox m_infoprod_event;
 	CSpinButtonCtrl m_infoprod_spin;
-	CString prod_code;
+	CString prod_num;
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedButton2();
 	afx_msg void OnBnClickedButton1();
+	CEdit m_infoprod_expiration;
 };

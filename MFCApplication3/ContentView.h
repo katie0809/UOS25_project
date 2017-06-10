@@ -3,6 +3,20 @@
 #include "ManageReturn.h"
 #include "NewOrder.h"
 #include "OrderConfirm.h"
+#include "NewEmp.h"
+#include "InfoEmp.h"
+#include "NewProd.h"
+#include "InfoProd.h"
+#include "EventDetail.h"
+#include "CodeList.h"
+#include "EmpSalary.h"
+#include "NewSale.h"
+#include "SaleDetail.h"
+#include "ManageAsset.h"
+#include "NewDisuse.h"
+#include "InfoDisuse.h"
+#include "NewCustomer.h"
+
 // CContentView 酉곗엯?덈떎.
 
 class CContentView : public CListView
@@ -25,6 +39,21 @@ public:
 	NewOrder * dlg_new_order; 
 	CManageReturn * dlg_manage_return;
 	COrderConfirm * dlg_confirmed_order;
+	CNewCustomer * dlg_customer;
+
+	NewEmp * dlg_new_emp;
+	InfoEmp * dlg_info_emp;
+	NewProd * dlg_new_prod;
+	InfoProd * dlg_info_prod;
+	EmpSalary * dlg_emp_salary;
+	EventDetail * dlg_event_detail;
+	CodeList * dlg_code_list;
+	NewDisuse * dlg_new_disuse;
+	InfoDisuse * dig_info_disuse;
+
+	NewSale * dlg_new_sale; //새 상품 추가 대화상자 인스턴스
+	SaleDetail * dlg_sale_detail;
+	ManageAsset * manageasset;
 
 public:
 
